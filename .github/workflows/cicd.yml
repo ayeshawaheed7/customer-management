@@ -1,0 +1,60 @@
+name: Build and Publish docker image
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+env:
+  POSTGRESQL_VERSION: 13.1
+  JAVA_VERSION: 17
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      postgres:
+        image: postgres:${{ env.POSTGRESQL_VERSION }}
+        env:
+          POSTGRES_PASSWORD: ${{ env.POSTGRESQL_PASSWORD }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Set Environment Variables
+        run: |
+          echo "POSTGRES_DB=customer" >> $GITHUB_ENV
+          echo "POSTGRES_USER=ayeshascode" >> $GITHUB_ENV
+          echo "POSTGRES_PASSWORD=password" >> $GITHUB_ENV
+          echo "SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/customer" >> $GITHUB_ENV
+          echo "SPRING_DATASOURCE_USERNAME=ayeshascode" >> $GITHUB_ENV
+          echo "SPRING_DATASOURCE_PASSWORD=password" >> $GITHUB_ENV
+
+      - name: Build with Maven
+        run: mvn --batch-mode --update-snapshots verify
+
+      - name: Packaging workflow data as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: customer-management-jar
+          path: build/libs/customer-management.jar
+          retention-days: 1
+
