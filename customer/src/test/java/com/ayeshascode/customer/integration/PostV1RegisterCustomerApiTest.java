@@ -55,6 +55,7 @@ public class PostV1RegisterCustomerApiTest {
                 String requestJson = objectMapper.writeValueAsString(request);
 
                 mockMvc.perform(post("/v1/customers")
+                                .header("X-Idempotency-Key", "123456789")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestJson))
                         .andExpect(status().isOk());
@@ -86,6 +87,7 @@ public class PostV1RegisterCustomerApiTest {
                 String requestJson = objectMapper.writeValueAsString(request);
 
                 mockMvc.perform(post("/v1/customers")
+                                .header("X-Idempotency-Key", "123456789")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestJson))
                         .andExpect(status().isBadRequest());

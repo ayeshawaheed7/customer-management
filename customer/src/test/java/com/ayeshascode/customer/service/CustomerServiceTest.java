@@ -1,4 +1,4 @@
-package com.ayeshascode.customer;
+package com.ayeshascode.customer.service;
 
 import com.ayeshascode.customer.model.Customer;
 import com.ayeshascode.customer.model.CustomerRegistrationRequest;
@@ -89,6 +89,8 @@ class CustomerServiceTest {
 
                     assertThat(thrown.getStatus()).isEqualTo(HttpStatus.CONFLICT);
                     assertThat(thrown.getReason()).isEqualTo("Email already taken");
+
+                    verify(customerRepository).existsByEmail(request.email());
                 }
             }
         }

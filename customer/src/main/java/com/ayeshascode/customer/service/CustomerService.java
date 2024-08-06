@@ -1,4 +1,4 @@
-package com.ayeshascode.customer;
+package com.ayeshascode.customer.service;
 
 import com.ayeshascode.customer.model.Customer;
 import com.ayeshascode.customer.repository.CustomerRepository;
