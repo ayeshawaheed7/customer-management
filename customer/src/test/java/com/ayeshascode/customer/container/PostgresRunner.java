@@ -1,4 +1,4 @@
-package com.ayeshascode.customer.container.config;
+package com.ayeshascode.customer.container;
 
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
