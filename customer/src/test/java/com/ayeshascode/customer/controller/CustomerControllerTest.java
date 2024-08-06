@@ -40,7 +40,11 @@ class CustomerControllerTest {
 
                     underTest.registerCustomer(request);
 
-                    verify(customerService).registerCustomer(request);
+                    verify(customerService).registerCustomer(
+                            request.firstName(),
+                            request.lastName(),
+                            request.email()
+                    );
                 }
             }
         }
