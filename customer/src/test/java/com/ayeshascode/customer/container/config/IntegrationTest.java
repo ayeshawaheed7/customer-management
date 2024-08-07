@@ -1,6 +1,7 @@
 package com.ayeshascode.customer.container.config;
 
 import com.ayeshascode.customer.CustomerApplication;
+import com.ayeshascode.customer.container.PostgresRunner;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
