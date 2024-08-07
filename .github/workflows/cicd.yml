@@ -12,7 +12,7 @@ jobs:
     timeout-minutes: 30
 
     services:
-      postgres:
+      postgres_customer:
         image: postgres:13.1
         env:
           POSTGRES_DB: customer
@@ -20,6 +20,20 @@ jobs:
           POSTGRES_PASSWORD: password
         ports:
           - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      postgres_fraud:
+        image: postgres:13.1
+        env:
+          POSTGRES_DB: fraud
+          POSTGRES_USER: ayeshascode
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5433:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -53,11 +67,18 @@ jobs:
       - name: Build with Maven
         run: mvn -X --batch-mode --update-snapshots clean verify -f pom.xml
 
-      - name: Packaging workflow data as artifacts
+      - name: Packaging customer workflow data as artifacts
         uses: actions/upload-artifact@v2
         with:
           name: customer-jar
           path: customer/target/*.jar
+          retention-days: 1
+
+      - name: Packaging fraud workflow data as artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: fraud-jar
+          path: fraud/target/*.jar
           retention-days: 1
 
       - name: Log in to Docker Hub
@@ -66,13 +87,22 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Build and push Docker image
-        id: push
+      - name: Build and push customer Docker image
+        id: push_customer
         uses: docker/build-push-action@v5
         with:
           context: customer
           file: customer/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-customer-service:${{ github.sha }}
+
+      - name: Build and push fraud Docker image
+        id: push_fraud
+        uses: docker/build-push-action@v5
+        with:
+          context: fraud
+          file: fraud/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-fraud-service:${{ github.sha }}
 
 
