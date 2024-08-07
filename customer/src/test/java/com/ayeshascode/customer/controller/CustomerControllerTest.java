@@ -52,6 +52,7 @@ class CustomerControllerTest {
                         String xIdempotencyKey = "123456789";
 
                         when(idempotencyKeyService.hasBeenAlreadyProcessed(any())).thenReturn(false);
+                        doNothing().when(customerService).registerCustomer(any(), any(), any());
                         doNothing().when(idempotencyKeyService).save(any());
 
                         underTest.registerCustomer(xIdempotencyKey, request);
