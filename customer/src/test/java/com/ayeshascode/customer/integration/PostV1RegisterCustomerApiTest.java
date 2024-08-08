@@ -1,6 +1,7 @@
 package com.ayeshascode.customer.integration;
 
 import com.ayeshascode.customer.container.config.IntegrationTest;
+import com.ayeshascode.customer.mockClient.FraudClientMock;
 import com.ayeshascode.customer.model.Customer;
 import com.ayeshascode.customer.model.CustomerRegistrationRequest;
 import com.ayeshascode.customer.repository.CustomerRepository;
@@ -30,8 +31,13 @@ public class PostV1RegisterCustomerApiTest {
     @Autowired
     private CustomerRepository customerRepository;
 
+    @Autowired
+    private FraudClientMock fraudClientMock;
+
+
     @BeforeEach
     void setUp() {
+        fraudClientMock.reset();
         customerRepository.deleteAll();
     }
 
@@ -40,34 +46,70 @@ public class PostV1RegisterCustomerApiTest {
     class GivenRegistrationData {
 
         @Nested
-        @DisplayName("When input data is valid")
+        @DisplayName("when input data is valid")
         class InputDataIsValid {
 
-            @Test
-            @DisplayName("then customer should be registered successfully")
-            void ShouldRegisterCustomer() throws Exception {
-                var request = new CustomerRegistrationRequest(
-                        "Albus",
-                        "Dumbledore",
-                        "dumbledore@hogwarts.com"
-                );
+            @Nested
+            @DisplayName("and customer is NOT fraudulent")
+            class customerIsNotFraudulent {
 
-                String requestJson = objectMapper.writeValueAsString(request);
+                @Test
+                @DisplayName("then customer should be registered successfully")
+                void ShouldRegisterCustomer() throws Exception {
+                    fraudClientMock.setupFraudCheckMock(false);
 
-                mockMvc.perform(post("/v1/customers")
-                                .header("X-Idempotency-Key", "123456789")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(requestJson))
-                        .andExpect(status().isOk());
+                    var request = new CustomerRegistrationRequest(
+                            "Albus",
+                            "Dumbledore",
+                            "dumbledore@hogwarts.com"
+                    );
 
-                Customer customer = customerRepository.findAll()
-                        .stream()
-                        .findFirst()
-                        .orElseThrow(() -> new AssertionError("Expected customer not found"));
+                    String requestJson = objectMapper.writeValueAsString(request);
 
-                assertThat(customer.getFirstName()).isEqualTo("Albus");
-                assertThat(customer.getLastName()).isEqualTo("Dumbledore");
-                assertThat(customer.getEmail()).isEqualTo("dumbledore@hogwarts.com");
+                    mockMvc.perform(post("/v1/customers")
+                                    .header("X-Idempotency-Key", "123456789")
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .content(requestJson))
+                            .andExpect(status().isOk());
+
+                    Customer customer = customerRepository.findAll()
+                            .stream()
+                            .findFirst()
+                            .orElseThrow(() -> new AssertionError("Expected customer not found"));
+
+                    assertThat(customer.getFirstName()).isEqualTo("Albus");
+                    assertThat(customer.getLastName()).isEqualTo("Dumbledore");
+                    assertThat(customer.getEmail()).isEqualTo("dumbledore@hogwarts.com");
+
+                    fraudClientMock.verify();
+                }
+            }
+
+            @Nested
+            @DisplayName("and customer is fraudulent")
+            class customerIsFraudulent {
+
+                @Test
+                @DisplayName("then customer shouldnt be registered successfully")
+                void ShouldntBeRegisterCustomer() throws Exception {
+                    fraudClientMock.setupFraudCheckMock(true);
+
+                    var request = new CustomerRegistrationRequest(
+                            "Albus",
+                            "Dumbledore",
+                            "dumbledore@hogwarts.com"
+                    );
+
+                    String requestJson = objectMapper.writeValueAsString(request);
+
+                    mockMvc.perform(post("/v1/customers")
+                                    .header("X-Idempotency-Key", "123456789")
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .content(requestJson))
+                            .andExpect(status().isForbidden());
+
+                    assertThat(customerRepository.findAll()).isEmpty();
+                }
             }
         }
 
