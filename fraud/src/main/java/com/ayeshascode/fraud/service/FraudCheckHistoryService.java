@@ -2,7 +2,7 @@ package com.ayeshascode.fraud.service;
 
 import com.ayeshascode.fraud.model.FraudCheckHistory;
 import com.ayeshascode.fraud.repository.FraudCheckHistoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -10,10 +10,10 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class FraudCheckHistoryService {
 
-    @Autowired
-    private FraudCheckHistoryRepository fraudCheckHistoryRepository;
+    private final FraudCheckHistoryRepository fraudCheckHistoryRepository;
 
     @Transactional
     public boolean saveAndCheckFraud(UUID customerId) {
