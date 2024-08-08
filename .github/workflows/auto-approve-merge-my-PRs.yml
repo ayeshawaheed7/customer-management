@@ -1,0 +1,70 @@
+name: Auto Approve and Merge My PRs
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check-and-merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up GitHub CLI
+        uses: cli/cli@v3
+
+      - name: Authenticate GitHub CLI
+        run: gh auth login --with-token <<< ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check PR author
+        id: check_author
+        run: |
+          MY_GITHUB_USERNAME="ayeshawaheed7"
+
+          PR_AUTHOR=$(gh pr view ${{ github.event.pull_request.number }} --json author --jq '.author.login')
+          
+          if [ "$PR_AUTHOR" = "$MY_GITHUB_USERNAME" ]; then
+            echo "is_author=true" >> $GITHUB_ENV
+          else
+            echo "is_author=false" >> $GITHUB_ENV
+          fi
+
+      - name: Check CI/CD status
+        if: env.is_author == 'true'
+        id: check_status
+        run: |
+          # Check if all required CI/CD checks are successful
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          
+          CHECKS=$(gh pr checks $PR_NUMBER --json checkRuns --jq '.checkRuns[] | select(.status == "completed" and .conclusion == "success") | .name')
+
+          REQUIRED_CHECKS=(
+            "Build with Maven"
+            "Build and push customer Docker image"
+            "Build and push fraud Docker image"
+          )
+
+          REQUIRED_CHECKS_STRING=$(printf "%s\n" "${REQUIRED_CHECKS[@]}")
+
+          # Check if all required checks are in the list of successful checks
+          for REQUIRED_CHECK in "${REQUIRED_CHECKS[@]}"
+          do
+            if [[ ! "$CHECKS" == *"$REQUIRED_CHECK"* ]]; then
+              echo "all_checks_passed=false" >> $GITHUB_ENV
+              exit 1
+            fi
+          done
+
+          echo "all_checks_passed=true" >> $GITHUB_ENV
+
+      - name: Approve and merge my PR
+        if: env.is_author == 'true' && env.all_checks_passed == 'true'
+        run: |
+          # Approve the PR
+          gh pr review ${{ github.event.pull_request.number }} --approve
+
+          # Merge the PR
+          gh pr merge ${{ github.event.pull_request.number }} --merge --admin
+          echo "PR #${{ github.event.pull_request.number }} has been approved and merged"
