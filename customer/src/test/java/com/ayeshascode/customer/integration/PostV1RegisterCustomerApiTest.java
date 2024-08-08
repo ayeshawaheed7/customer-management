@@ -77,7 +77,7 @@ public class PostV1RegisterCustomerApiTest {
                             .findFirst()
                             .orElseThrow(() -> new AssertionError("Expected customer not found"));
 
-                    assertThat(customer.getFirstName()).isEqualTo("Albus");
+                    assertThat(customer.getFirstName()).isEqualTo("Albus1");
                     assertThat(customer.getLastName()).isEqualTo("Dumbledore");
                     assertThat(customer.getEmail()).isEqualTo("dumbledore@hogwarts.com");
 
