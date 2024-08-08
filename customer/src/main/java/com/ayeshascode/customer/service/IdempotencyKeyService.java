@@ -5,10 +5,16 @@ import com.ayeshascode.customer.repository.IdempotencyKeyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class IdempotencyKeyService {
     private final IdempotencyKeyRepository idempotencyKeyRepository;
+
+    public String generateKey() {
+        return UUID.randomUUID().toString();
+    }
 
     public boolean hasBeenAlreadyProcessed(String xIdempotencyKey) {
         return idempotencyKeyRepository.existsByKey(xIdempotencyKey);

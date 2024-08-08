@@ -10,7 +10,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -24,7 +27,7 @@ class IdempotencyKeyServiceTest {
     @InjectMocks
     private IdempotencyKeyService underTest;
 
-    private final String xIdempotencyKey = "123456789";
+    private final String xIdempotencyKey = UUID.randomUUID().toString();
 
     @Nested
     @DisplayName("hasBeenAlreadyProcessed")
@@ -78,5 +81,17 @@ class IdempotencyKeyServiceTest {
 
             verify(idempotencyKeyRepository).save(new IdempotencyKey(xIdempotencyKey));
         }
+    }
+
+    @Nested
+    @DisplayName("generateKey")
+    class generateKey {
+
+        @Test
+        @DisplayName("should return key")
+        void shouldReturnKey() {
+            String key = underTest.generateKey();
+
+            assertDoesNotThrow(() -> UUID.fromString(key), "Generated key is not a valid UUID");}
     }
 }
