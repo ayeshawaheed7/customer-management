@@ -18,7 +18,6 @@ import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
-import java.net.URISyntaxException;
 
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 

@@ -26,6 +26,7 @@ public class FraudCheckHistoryController {
     @PostMapping(path = "{customerId}")
     public ResponseEntity<FraudCheckResponse> saveAndCheckFraud(@RequestHeader(value = "X-Idempotency-Key") String xIdempotencyKey,
                                                                 @PathVariable("customerId") UUID customerId) {
+        log.info("save and fraud check request with customerId: {}", customerId);
         if (idempotencyKeyService.hasBeenAlreadyProcessed(xIdempotencyKey)) {
             log.debug("Already processed - Discarding register customer request with xIdempotencyKey: {} \n and customerId: {}", xIdempotencyKey, customerId);
             return ResponseEntity.ok().build();

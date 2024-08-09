@@ -59,6 +59,6 @@ public class CustomerService {
                 }
             }
         }
-        throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Unable to complete fraud check due to repeated connection issues.");
+        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to complete fraud check due to some internal server issues.");
     }
 }

@@ -18,7 +18,8 @@ spring:
         format_sql: true
 
 fraud-service:
-    url: http://localhost:9091
+#  url: http://localhost:9091      #  for local development
+  url: http://FRAUD                # when service is registered with Eureka
 
 eureka:
   client:
