@@ -8,7 +8,7 @@ One of the key features of the Customer Management service is the Register Custo
 * Registration: If the Fraud Service does not flag the customer as fraudulent, the Customer Service proceeds with the registration process, storing the customer's data in the database.
 * Integration: The integration between Customer Service and Fraud Service ensures a secure and reliable registration process, maintaining the integrity of our customer base.
 
-# Detailed Overview
+## Detailed Overview
 For a more in-depth understanding of our project, including detailed architecture, best practices, and technical implementation, please visit our [GitHub Wiki](https://github.com/ayeshawaheed7/customer-management.wiki.git). The Wiki provides comprehensive information on:
 
 * Architecture and Design: A detailed breakdown of our modular monolith and microservices approach.
