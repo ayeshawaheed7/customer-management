@@ -1,4 +1,4 @@
-package com.ayeshascode.customer.container;
+package com.ayeshascode.customer.container.runner;
 
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -18,9 +18,5 @@ public class PostgresRunner implements BeforeAllCallback {
         System.setProperty("POSTGRESQL_DB_URL", postgresContainer.getJdbcUrl());
         System.setProperty("POSTGRESQL_DB_USERNAME", postgresContainer.getUsername());
         System.setProperty("POSTGRESQL_DB_PASSWORD", postgresContainer.getPassword());
-    }
-
-    public static PostgreSQLContainer<?> getPostgresContainer() {
-        return postgresContainer;
     }
 }

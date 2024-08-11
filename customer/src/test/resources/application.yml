@@ -18,5 +18,13 @@ spring:
         format_sql: true
 
 fraud-service:
-    url: http://localhost:9091
+#  url: http://localhost:9091      #  for local development
+  url: http://FRAUD                # when service is registered with Eureka
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE}
+    fetch-registry: true
+    register-with-eureka: true
 

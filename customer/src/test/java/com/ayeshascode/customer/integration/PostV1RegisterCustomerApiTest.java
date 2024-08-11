@@ -1,7 +1,7 @@
 package com.ayeshascode.customer.integration;
 
 import com.ayeshascode.customer.container.config.IntegrationTest;
-import com.ayeshascode.customer.mockClient.FraudClientMock;
+import com.ayeshascode.customer.mock.FraudClientMock;
 import com.ayeshascode.customer.model.Customer;
 import com.ayeshascode.customer.model.CustomerRegistrationRequest;
 import com.ayeshascode.customer.repository.CustomerRepository;

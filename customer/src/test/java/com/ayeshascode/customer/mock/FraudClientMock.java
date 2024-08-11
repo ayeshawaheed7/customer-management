@@ -1,4 +1,4 @@
-package com.ayeshascode.customer.mockClient;
+package com.ayeshascode.customer.mock;
 
 import com.ayeshascode.customer.model.FraudCheckResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -43,9 +43,10 @@ public class FraudClientMock {
     }
 
     public void setupFraudCheckMock(boolean isFraudster) throws JsonProcessingException {
+        String url = fraudServiceUrl.replace("FRAUD", "localhost:9091");
         FraudCheckResponse response = new FraudCheckResponse(isFraudster);
         mockRestServiceServer.expect(MockRestRequestMatchers.method(HttpMethod.POST))
-                .andExpect(requestTo(Matchers.startsWith(fraudServiceUrl + "/v1/fraud-check/")))
+                .andExpect(requestTo(Matchers.startsWith(url + "/v1/fraud-check/")))
                 .andExpect(MockRestRequestMatchers.header("X-Idempotency-Key", Matchers.notNullValue()))
                 .andRespond(
                         MockRestResponseCreators.withStatus(HttpStatus.OK)
