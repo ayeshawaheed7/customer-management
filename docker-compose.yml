@@ -1,13 +1,19 @@
 services:
+  eureka-server:
+    container_name: eureka-server
+    image: ayeshawaheed7/eureka-server:latest
+    ports:
+      - "8761:8761"
+
   postgres-customer:
     container_name: postgres-customer
     image: postgres
     environment:
       POSTGRES_USER: ayeshascode
       POSTGRES_PASSWORD: password
-      PGDATA: /data/postgres
+      PGDATA: /var/lib/postgresql/data
     volumes:
-      - postgres:/data/postgres
+      - postgres-customer-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     networks:
@@ -20,9 +26,9 @@ services:
     environment:
       POSTGRES_USER: ayeshascode
       POSTGRES_PASSWORD: password
-      PGDATA: /data/postgres
+      PGDATA: /var/lib/postgresql/data
     volumes:
-      - postgres:/data/postgres
+      - postgres-fraud-data:/var/lib/postgresql/data
     ports:
       - "5433:5432"
     networks:
@@ -49,5 +55,6 @@ networks:
     driver: bridge
 
 volumes:
-  postgres:
+  postgres-customer-data:
+  postgres-fraud-data:
   pgadmin:
