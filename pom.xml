@@ -16,6 +16,7 @@
     <module>customer</module>
     <module>fraud</module>
     <module>eureka-server</module>
+    <module>clients</module>
   </modules>
 
   <properties>
@@ -60,6 +61,10 @@
       <artifactId>mockito-core</artifactId>
       <version>4.0.0</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-openfeign</artifactId>
     </dependency>
   </dependencies>
 

@@ -34,9 +34,6 @@ class FraudClientTest {
     @InjectMocks
     private FraudClient underTest;
 
-    FraudClientTest() {
-    }
-
     @BeforeEach
     void setUp() {
         underTest = new FraudClient(restTemplate, fraudServiceUrl);
