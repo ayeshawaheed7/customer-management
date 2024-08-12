@@ -106,5 +106,3 @@ jobs:
           push: true
           platforms: linux/arm64
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-fraud-service:${{ github.sha }}
-
-
