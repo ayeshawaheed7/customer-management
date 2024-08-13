@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.UUID;
 
+// microservice communication via Resttemplate - currently doing with feignClient
 @Component
 public class FraudClient {
 

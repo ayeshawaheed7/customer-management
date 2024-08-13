@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,16 +44,8 @@ public class PostV1FraudCheckApiTest {
             @DisplayName("then should determine customer fraud check")
             void shouldDetermineFraudCheck() throws Exception {
                 UUID customerId = UUID.randomUUID();
-                FraudCheckHistory fraudCheckHistory = new FraudCheckHistory(
-                        UUID.randomUUID(),
-                        customerId,
-                        false,
-                        LocalDateTime.now()
-                );
 
-                fraudCheckHistoryRepository.save(fraudCheckHistory);
-
-                String response = mockMvc.perform(post("/v1/fraud-check/{customerId}", "b6bfef64-27a8-4b67-9f95-111f306acbb8")
+                String response = mockMvc.perform(post("/v1/fraud-check/{customerId}", customerId)
                                 .header("X-Idempotency-Key", "b6bfef64-27a8-4b67-9f95-111f306acbbc")
                                 .contentType(MediaType.APPLICATION_JSON))
                         .andExpect(status().isOk())
@@ -65,6 +56,16 @@ public class PostV1FraudCheckApiTest {
                 FraudCheckResponse responseDTO = objectMapper.readValue(response, FraudCheckResponse.class);
 
                 assertThat(responseDTO.isFraudster()).isFalse();
+
+                FraudCheckHistory fraudCheckHistory = fraudCheckHistoryRepository.findAll()
+                        .stream()
+                        .findFirst()
+                        .orElseThrow(() -> new AssertionError("Expected result not found"));
+
+                assertThat(fraudCheckHistory.getIsFraudster()).isFalse();
+                assertThat(fraudCheckHistory.getCustomerId()).isEqualTo(customerId);
+                assertThat(fraudCheckHistory.getId()).isNotNull();
+                assertThat(fraudCheckHistory.getCreatedAt()).isNotNull();
             }
         }
     }
