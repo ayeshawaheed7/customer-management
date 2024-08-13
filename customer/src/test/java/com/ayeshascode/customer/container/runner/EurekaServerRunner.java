@@ -28,6 +28,11 @@ public class EurekaServerRunner implements BeforeAllCallback {
                 "fraud",
                 9091
         );
+        registerFraudServiceWithEureka(
+                eurekaServer.getEurekaUrl(),
+                "notification",
+                9092
+        );
     }
 
     private void registerFraudServiceWithEureka(String eurekaUrl, String serviceName, int port) {
