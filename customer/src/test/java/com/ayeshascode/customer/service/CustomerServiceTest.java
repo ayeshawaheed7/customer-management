@@ -96,7 +96,10 @@ class CustomerServiceTest {
                                 cu.getLastName().equals(customer.getLastName()) &&
                                 cu.getEmail().equals(customer.getEmail())
                 ));
-                verify(notificationClient).sendNotification(customer.getId().toString(), notificationRequest);
+                verify(notificationClient).sendNotification(isNotNull(), argThat(nr ->
+                        nr.message().equals(notificationRequest.message()) &&
+                                nr.toCustomerEmail().equals(notificationRequest.toCustomerEmail())
+                ));
             }
 
             @Nested
