@@ -4,17 +4,11 @@ The Customer Management Service is designed to handle customer-related operation
 ## Register Customer Functionality
 One of the key features of the Customer Management service is the Register Customer functionality. The process involves:
 
-* Fraud Check: When a customer attempts to register, the Customer Service communicates with the Fraud Service to verify the customer's legitimacy.
-* Registration: If the Fraud Service does not flag the customer as fraudulent, the Customer Service proceeds with the registration process, storing the customer's data in the database.
-* Integration: The integration between Customer Service and Fraud Service ensures a secure and reliable registration process, maintaining the integrity of our customer base.
+- **Fraud Check:** When a customer attempts to register, the Customer Service uses Feign Client to communicate with the Fraud Service, verifying the customer's legitimacy. This step is crucial to detect and prevent fraudulent activities.
+- **Notification:** Once the Fraud Service confirms that the customer is not flagged as fraudulent, the Customer Service sends a notification via the Notification Service to inform the customer of their registration status.
+- **Registration:** Following the successful fraud check and notification, the Customer Service proceeds with the registration process, storing the customer’s data in the database.
+- **Integration:** The integration between Customer Service, Fraud Service, and Notification Service ensures a secure, efficient, and reliable registration process, maintaining the integrity of our customer base and enhancing the user experience.
 
 ## Detailed Overview
-For a more in-depth understanding of our project, including detailed architecture, best practices, and technical implementation, please visit our GitHub Wiki. The Wiki provides comprehensive information on:
-
-* Architecture and Design: A detailed breakdown of our modular monolith and microservices approach.
-* Best Practices: Insights into the coding practices, testing strategies, and configuration management.
-* CI/CD Automation: An overview of our CI/CD pipelines, including build and deployment processes.
-* Technology Stack: Information about the technologies and tools used in our project.
-
-Explore the Wiki to get a complete picture of our development journey and technical setup.
+For a more in-depth understanding of our project, including detailed architecture, best practices, and technical implementation, please visit our GitHub Wiki.
 
