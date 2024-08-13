@@ -2,6 +2,8 @@ package com.ayeshascode.customer.service;
 
 import com.ayeshascode.clients.fraud.FraudCheckResponse;
 import com.ayeshascode.clients.fraud.FraudClient;
+import com.ayeshascode.clients.notification.NotificationClient;
+import com.ayeshascode.clients.notification.NotificationRequest;
 import com.ayeshascode.customer.model.Customer;
 import com.ayeshascode.customer.model.CustomerRegistrationRequest;
 import com.ayeshascode.customer.repository.CustomerRepository;
@@ -36,6 +38,9 @@ class CustomerServiceTest {
     @Mock
     private FraudClient fraudClient;
 
+    @Mock
+    private NotificationClient notificationClient;
+
     @InjectMocks
     private CustomerService underTest;
 
@@ -46,7 +51,6 @@ class CustomerServiceTest {
         @Nested
         @DisplayName("when registration data is provided")
         class RegistrationDataIsProvided {
-
             private final Customer customer = new Customer(
                     UUID.randomUUID(),
                     "Harry",
@@ -60,6 +64,12 @@ class CustomerServiceTest {
                     customer.getEmail()
             );
 
+            private final NotificationRequest notificationRequest = new NotificationRequest(
+                    customer.getId(),
+                    customer.getEmail(),
+                    "Hi. Welcome to Hogwarts. :)"
+            );
+
             private final String xIdempotencyKey = UUID.randomUUID().toString();
 
             @Test
@@ -69,8 +79,9 @@ class CustomerServiceTest {
 
                 when(idempotencyKeyService.generateKey()).thenReturn(xIdempotencyKey);
                 when(customerRepository.existsByEmail(any())).thenReturn(false);
-                when(customerRepository.save(any())).thenReturn(customer);
+                when(customerRepository.saveAndFlush(any())).thenReturn(customer);
                 when(fraudClient.saveAndCheckFraud(any(), any())).thenReturn(ResponseEntity.ok(expectedResponse));
+                doNothing().when(notificationClient).sendNotification(any(), any());
 
                 underTest.registerCustomer(
                         request.firstName(),
@@ -80,11 +91,12 @@ class CustomerServiceTest {
 
                 verify(idempotencyKeyService).generateKey();
                 verify(customerRepository).existsByEmail(request.email());
-                verify(customerRepository).save(argThat(cu ->
+                verify(customerRepository).saveAndFlush(argThat(cu ->
                         cu.getFirstName().equals(customer.getFirstName()) &&
                                 cu.getLastName().equals(customer.getLastName()) &&
                                 cu.getEmail().equals(customer.getEmail())
                 ));
+                verify(notificationClient).sendNotification(customer.getId().toString(), notificationRequest);
             }
 
             @Nested
@@ -132,8 +144,9 @@ class CustomerServiceTest {
                     assertThat(thrown.getReason()).isEqualTo("Customer is fraudulent. We cannot proceed with the registration.");
 
                     verify(customerRepository).existsByEmail(request.email());
-                    verify(customerRepository, never()).save(any());
+                    verify(customerRepository, never()).saveAndFlush(any());
                     verify(idempotencyKeyService).generateKey();
+                    verify(notificationClient, never()).sendNotification(customer.getId().toString(), notificationRequest);
                 }
             }
         }

@@ -1,8 +1,10 @@
 package com.ayeshascode.customer.integration;
 
+import com.ayeshascode.clients.notification.NotificationRequest;
 import com.ayeshascode.customer.container.config.IntegrationTest;
 import com.ayeshascode.customer.mock.WireMockConfig;
 import com.ayeshascode.customer.mock.fraudclient.FraudClientWireMockServer;
+import com.ayeshascode.customer.mock.notificationclient.NotificationClientWireMockServer;
 import com.ayeshascode.customer.model.Customer;
 import com.ayeshascode.customer.model.CustomerRegistrationRequest;
 import com.ayeshascode.customer.repository.CustomerRepository;
@@ -43,7 +45,13 @@ public class PostV1RegisterCustomerApiTest {
     private WireMockServer mockFraudService;
 
     @Autowired
+    private WireMockServer mockNotificationService;
+
+    @Autowired
     private FraudClientWireMockServer fraudClientWireMockServer;
+
+    @Autowired
+    private NotificationClientWireMockServer notificationClientWireMockServer;
 
     @BeforeEach
     void setUp() {
@@ -66,6 +74,7 @@ public class PostV1RegisterCustomerApiTest {
                 @DisplayName("then customer should be registered successfully")
                 void ShouldRegisterCustomer() throws Exception {
                     fraudClientWireMockServer.setupFraudCheckMock(mockFraudService,false);
+                    notificationClientWireMockServer.setupFraudCheckMock(mockNotificationService);
 
                     var request = new CustomerRegistrationRequest(
                             "Albus",
@@ -91,6 +100,7 @@ public class PostV1RegisterCustomerApiTest {
                     assertThat(customer.getEmail()).isEqualTo("dumbledore@hogwarts.com");
 
                     fraudClientWireMockServer.verify(mockFraudService);
+                    notificationClientWireMockServer.verify(mockNotificationService);
                 }
             }
 

@@ -48,7 +48,7 @@ class NotificationServiceTest {
                         notification.getToCustomerId().equals(toCustomerId) &&
                                 notification.getToCustomerEmail().equals(toCustomerEmail) &&
                                 notification.getMessage().equals(message) &&
-                                notification.getSender().equals("Dumbledore")
+                                notification.getSender().equals("Donna")
                 ));
             }
         }

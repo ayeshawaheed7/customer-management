@@ -2,6 +2,8 @@ package com.ayeshascode.customer.service;
 
 import com.ayeshascode.clients.fraud.FraudCheckResponse;
 import com.ayeshascode.clients.fraud.FraudClient;
+import com.ayeshascode.clients.notification.NotificationClient;
+import com.ayeshascode.clients.notification.NotificationRequest;
 import com.ayeshascode.customer.model.Customer;
 import com.ayeshascode.customer.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final FraudClient fraudClient;
     private final IdempotencyKeyService idempotencyKeyService;
+    private final NotificationClient notificationClient;
 
     @Transactional
     public void registerCustomer(String firstName, String lastName, String email) {
@@ -40,7 +43,15 @@ public class CustomerService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Customer is fraudulent. We cannot proceed with the registration.");
         }
 
-        customerRepository.save(customer);
+        customerRepository.saveAndFlush(customer);
+
+        NotificationRequest notificationRequest = new NotificationRequest(
+                customer.getId(),
+                customer.getEmail(),
+                "Hi. Welcome to Hogwarts. :)"
+        );
+
+        notificationClient.sendNotification(customer.getId().toString(), notificationRequest);
     }
 
     private boolean isEmailAlreadyTaken(String email) {

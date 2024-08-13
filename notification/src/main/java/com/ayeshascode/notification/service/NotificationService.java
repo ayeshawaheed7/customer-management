@@ -5,6 +5,7 @@ import com.ayeshascode.notification.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -14,12 +15,13 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
 
+    @Transactional
     public void send(UUID toCustomerId, String toCustomerEmail, String message) {
         notificationRepository.save(new Notification(
                         UUID.randomUUID(),
                         toCustomerId,
                         toCustomerEmail,
-                        "Dumbledore",
+                        "Donna",
                         message,
                         LocalDateTime.now()
                 )
