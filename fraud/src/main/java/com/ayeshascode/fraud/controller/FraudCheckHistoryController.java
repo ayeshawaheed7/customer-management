@@ -1,6 +1,6 @@
 package com.ayeshascode.fraud.controller;
 
-import com.ayeshascode.fraud.model.FraudCheckResponse;
+import com.ayeshascode.clients.fraud.FraudCheckResponse;
 import com.ayeshascode.fraud.service.FraudCheckHistoryService;
 import com.ayeshascode.fraud.service.IdempotencyKeyService;
 import lombok.RequiredArgsConstructor;

@@ -1,8 +1,8 @@
 package com.ayeshascode.customer.service;
 
-import com.ayeshascode.customer.client.FraudClient;
+import com.ayeshascode.clients.fraud.FraudCheckResponse;
+import com.ayeshascode.clients.fraud.FraudClient;
 import com.ayeshascode.customer.model.Customer;
-import com.ayeshascode.customer.model.FraudCheckResponse;
 import com.ayeshascode.customer.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -51,7 +51,7 @@ public class CustomerService {
         int maxRetries = 3;
         for (int attempt = 0; attempt < maxRetries; attempt++) {
             try {
-                FraudCheckResponse response = fraudClient.isFraudulentCustomer(customerId, xIdempotencyKey);
+                FraudCheckResponse response = fraudClient.saveAndCheckFraud(xIdempotencyKey,  customerId).getBody();
                 return response.isFraudster();
             } catch (ResourceAccessException e) {
                 if (attempt == maxRetries - 1) {

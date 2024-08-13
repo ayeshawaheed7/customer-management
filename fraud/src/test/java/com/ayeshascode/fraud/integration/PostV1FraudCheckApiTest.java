@@ -1,8 +1,8 @@
 package com.ayeshascode.fraud.integration;
 
+import com.ayeshascode.clients.fraud.FraudCheckResponse;
 import com.ayeshascode.fraud.container.config.IntegrationTest;
 import com.ayeshascode.fraud.model.FraudCheckHistory;
-import com.ayeshascode.fraud.model.FraudCheckResponse;
 import com.ayeshascode.fraud.repository.FraudCheckHistoryRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;

@@ -1,6 +1,6 @@
-package com.ayeshascode.customer.mock;
+package com.ayeshascode.customer.mock.fraudclient;
 
-import com.ayeshascode.customer.model.FraudCheckResponse;
+import com.ayeshascode.clients.fraud.FraudCheckResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
@@ -23,7 +23,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 
 @Component
 @Scope("prototype")
-public class FraudClientMock {
+public class FraudClientMockRestServer {
 
     private MockRestServiceServer mockRestServiceServer;
 

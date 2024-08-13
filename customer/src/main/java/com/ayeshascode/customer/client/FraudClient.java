@@ -1,6 +1,6 @@
 package com.ayeshascode.customer.client;
 
-import com.ayeshascode.customer.model.FraudCheckResponse;
+import com.ayeshascode.clients.fraud.FraudCheckResponse;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;

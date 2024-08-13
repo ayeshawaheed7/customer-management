@@ -1,23 +1,31 @@
 package com.ayeshascode.customer.integration;
 
 import com.ayeshascode.customer.container.config.IntegrationTest;
-import com.ayeshascode.customer.mock.FraudClientMock;
+import com.ayeshascode.customer.mock.WireMockConfig;
+import com.ayeshascode.customer.mock.fraudclient.FraudClientWireMockServer;
 import com.ayeshascode.customer.model.Customer;
 import com.ayeshascode.customer.model.CustomerRegistrationRequest;
 import com.ayeshascode.customer.repository.CustomerRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.WireMockServer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ActiveProfiles("mock-service")
+@EnableFeignClients
+@ContextConfiguration(classes = { WireMockConfig.class })
 @DisplayName("POST v1/customers")
 @IntegrationTest
 public class PostV1RegisterCustomerApiTest {
@@ -32,12 +40,13 @@ public class PostV1RegisterCustomerApiTest {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private FraudClientMock fraudClientMock;
+    private WireMockServer mockFraudService;
 
+    @Autowired
+    private FraudClientWireMockServer fraudClientWireMockServer;
 
     @BeforeEach
     void setUp() {
-        fraudClientMock.reset();
         customerRepository.deleteAll();
     }
 
@@ -56,7 +65,7 @@ public class PostV1RegisterCustomerApiTest {
                 @Test
                 @DisplayName("then customer should be registered successfully")
                 void ShouldRegisterCustomer() throws Exception {
-                    fraudClientMock.setupFraudCheckMock(false);
+                    fraudClientWireMockServer.setupFraudCheckMock(mockFraudService,false);
 
                     var request = new CustomerRegistrationRequest(
                             "Albus",
@@ -81,7 +90,7 @@ public class PostV1RegisterCustomerApiTest {
                     assertThat(customer.getLastName()).isEqualTo("Dumbledore");
                     assertThat(customer.getEmail()).isEqualTo("dumbledore@hogwarts.com");
 
-                    fraudClientMock.verify();
+                    fraudClientWireMockServer.verify(mockFraudService);
                 }
             }
 
@@ -92,7 +101,7 @@ public class PostV1RegisterCustomerApiTest {
                 @Test
                 @DisplayName("then customer shouldnt be registered successfully")
                 void ShouldntBeRegisterCustomer() throws Exception {
-                    fraudClientMock.setupFraudCheckMock(true);
+                    fraudClientWireMockServer.setupFraudCheckMock(mockFraudService,true);
 
                     var request = new CustomerRegistrationRequest(
                             "Albus",
@@ -109,6 +118,8 @@ public class PostV1RegisterCustomerApiTest {
                             .andExpect(status().isForbidden());
 
                     assertThat(customerRepository.findAll()).isEmpty();
+
+                    fraudClientWireMockServer.verify(mockFraudService);
                 }
             }
         }

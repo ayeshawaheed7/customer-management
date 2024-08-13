@@ -1,9 +1,9 @@
 package com.ayeshascode.customer.service;
 
-import com.ayeshascode.customer.client.FraudClient;
+import com.ayeshascode.clients.fraud.FraudCheckResponse;
+import com.ayeshascode.clients.fraud.FraudClient;
 import com.ayeshascode.customer.model.Customer;
 import com.ayeshascode.customer.model.CustomerRegistrationRequest;
-import com.ayeshascode.customer.model.FraudCheckResponse;
 import com.ayeshascode.customer.repository.CustomerRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
@@ -21,9 +22,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CustomerServiceTest {
@@ -66,10 +65,12 @@ class CustomerServiceTest {
             @Test
             @DisplayName("then save customer in DB")
             void saveCustomerInDB() {
+                FraudCheckResponse expectedResponse = new FraudCheckResponse(false);
+
                 when(idempotencyKeyService.generateKey()).thenReturn(xIdempotencyKey);
                 when(customerRepository.existsByEmail(any())).thenReturn(false);
                 when(customerRepository.save(any())).thenReturn(customer);
-                when(fraudClient.isFraudulentCustomer(any(), any())).thenReturn(new FraudCheckResponse(false));
+                when(fraudClient.saveAndCheckFraud(any(), any())).thenReturn(ResponseEntity.ok(expectedResponse));
 
                 underTest.registerCustomer(
                         request.firstName(),
@@ -115,9 +116,11 @@ class CustomerServiceTest {
                 @Test
                 @DisplayName("then throws ResponseStatusException")
                 void throwsResponseStatusException() {
+                    FraudCheckResponse expectedResponse = new FraudCheckResponse(true);
+
                     when(idempotencyKeyService.generateKey()).thenReturn(xIdempotencyKey);
                     when(customerRepository.existsByEmail(any())).thenReturn(false);
-                    when(fraudClient.isFraudulentCustomer(any(), any())).thenReturn(new FraudCheckResponse(true));
+                    when(fraudClient.saveAndCheckFraud(any(), any())).thenReturn(ResponseEntity.ok(expectedResponse));
 
                     ResponseStatusException thrown = assertThrows(
                             ResponseStatusException.class, () -> {
