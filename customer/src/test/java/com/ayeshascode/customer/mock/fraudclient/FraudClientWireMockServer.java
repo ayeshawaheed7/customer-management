@@ -14,6 +14,7 @@ public class FraudClientWireMockServer {
 
     public void setupFraudCheckMock(WireMockServer mockService, boolean isFraudster)  {
         mockService.stubFor(post(urlPathMatching("/v1/fraud-check/.*"))
+                .withHeader("X-Idempotency-Key", matching(".*"))
                 .willReturn(aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
