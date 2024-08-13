@@ -70,7 +70,7 @@ public class PostV1SendNotificationApiTest {
                 assertThat(notification.getToCustomerId()).isEqualTo(toCustomerId);
                 assertThat(notification.getToCustomerEmail()).isEqualTo(toCustomerEmail);
                 assertThat(notification.getMessage()).isEqualTo(message);
-                assertThat(notification.getSender()).isEqualTo("Dumbledore");
+                assertThat(notification.getSender()).isEqualTo("Donna");
             }
         }
     }
