@@ -40,6 +40,21 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+
+      postgres_notification:
+        image: postgres:13.1
+        env:
+          POSTGRES_DB: notification
+          POSTGRES_USER: ayeshascode
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5434:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -81,6 +96,13 @@ jobs:
           path: fraud/target/*.jar
           retention-days: 1
 
+      - name: Packaging notification workflow data as artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: notification-jar
+          path: notification/target/*.jar
+          retention-days: 1
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -106,3 +128,13 @@ jobs:
           push: true
           platforms: linux/arm64
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-fraud-service:${{ github.sha }}
+
+      - name: Build and push notification Docker image
+        id: push_notification
+        uses: docker/build-push-action@v5
+        with:
+          context: notification
+          file: notification/Dockerfile
+          push: true
+          platforms: linux/arm64
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-notification-service:${{ github.sha }}
