@@ -1,4 +1,4 @@
-package com.ayeshascode.customer.client;
+package com.ayeshascode.customer.resttemplate;
 
 import com.ayeshascode.clients.fraud.FraudCheckResponse;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,14 +14,14 @@ import java.util.UUID;
 
 // microservice communication via Resttemplate - currently doing with feignClient
 @Component
-public class FraudClient {
+public class FraudClientRestTemplate {
 
     @Qualifier("fraudApiRestTemplate")
     private final RestTemplate restTemplate;
 
     private final String fraudServiceUrl;
 
-    public FraudClient(RestTemplate restTemplate, @Value("${fraud-service.url}") String fraudServiceUrl) {
+    public FraudClientRestTemplate(RestTemplate restTemplate, @Value("${fraud-service.url}") String fraudServiceUrl) {
         this.restTemplate = restTemplate;
         this.fraudServiceUrl = fraudServiceUrl;
     }

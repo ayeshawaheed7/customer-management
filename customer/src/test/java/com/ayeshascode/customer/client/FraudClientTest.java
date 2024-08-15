@@ -1,6 +1,7 @@
 package com.ayeshascode.customer.client;
 
 import com.ayeshascode.clients.fraud.FraudCheckResponse;
+import com.ayeshascode.customer.resttemplate.FraudClientRestTemplate;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,7 +22,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @Disabled
-class FraudClientTest {
+class FraudClientRestTemplateTest {
 
     @Mock
     private RestTemplate restTemplate;
@@ -30,11 +31,11 @@ class FraudClientTest {
     private String fraudServiceUrl;
 
     @InjectMocks
-    private FraudClient underTest;
+    private FraudClientRestTemplate underTest;
 
     @BeforeEach
     void setUp() {
-        underTest = new FraudClient(restTemplate, fraudServiceUrl);
+        underTest = new FraudClientRestTemplate(restTemplate, fraudServiceUrl);
     }
 
     @Nested
