@@ -27,7 +27,7 @@ public class CustomerController {
                                  @Valid @RequestBody CustomerRegistrationRequest request) {
         log.info("new customer registration {}", request);
         if (idempotencyKeyService.hasBeenAlreadyProcessed(xIdempotencyKey)) {
-            log.debug("Already processed - Discarding register customer request with xIdempotencyKey: {} \n and request: {}", xIdempotencyKey, request);
+            log.info("Already processed - Discarding register customer request with xIdempotencyKey: {} \n and request: {}", xIdempotencyKey, request);
             return;
         }
         customerService.registerCustomer(

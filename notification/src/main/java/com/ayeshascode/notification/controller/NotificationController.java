@@ -23,7 +23,7 @@ public class NotificationController {
                                  @Valid @RequestBody NotificationRequest request) {
         log.info("send notification request {}", request);
         if (idempotencyKeyService.hasBeenAlreadyProcessed(xIdempotencyKey)) {
-            log.debug("Already processed - Discarding send notification request with xIdempotencyKey: {} \n and request: {}", xIdempotencyKey, request);
+            log.info("Already processed - Discarding send notification request with xIdempotencyKey: {} \n and request: {}", xIdempotencyKey, request);
             return;
         }
         notificationService.send(

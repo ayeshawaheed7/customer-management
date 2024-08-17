@@ -28,7 +28,7 @@ public class FraudCheckHistoryController {
                                                                 @PathVariable("customerId") UUID customerId) {
         log.info("save and fraud check request with customerId: {}", customerId);
         if (idempotencyKeyService.hasBeenAlreadyProcessed(xIdempotencyKey)) {
-            log.debug("Already processed - Discarding register customer request with xIdempotencyKey: {} \n and customerId: {}", xIdempotencyKey, customerId);
+            log.info("Already processed - Discarding register customer request with xIdempotencyKey: {} \n and customerId: {}", xIdempotencyKey, customerId);
             return ResponseEntity.ok().build();
         }
         boolean isFraudulentCustomer = fraudCheckHistoryService.saveAndCheckFraud(customerId);
