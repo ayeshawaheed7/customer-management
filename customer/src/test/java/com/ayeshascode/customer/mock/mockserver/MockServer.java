@@ -1,4 +1,4 @@
-package com.ayeshascode.customer.mock.wiremockserver;
+package com.ayeshascode.customer.mock.mockserver;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.springframework.http.HttpStatus;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 @Component
-public class ClientWireMockServer {
+public class MockServer {
 
     public void setupFraudCheckMock(WireMockServer mockService, boolean isFraudster)  {
         mockService.stubFor(post(urlPathMatching("/v1/fraud-check/.*"))

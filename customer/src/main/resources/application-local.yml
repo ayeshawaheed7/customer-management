@@ -17,11 +17,6 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
-# Use when doing communication with RestTemplate
-fraud-service:
-  #  url: http://localhost:9091      #  for local development
-  url: http://FRAUD                # when service is registered with Eureka
-
 eureka:
   client:
     service-url:

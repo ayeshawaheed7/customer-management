@@ -2,7 +2,7 @@ package com.ayeshascode.customer.integration;
 
 import com.ayeshascode.customer.container.config.IntegrationTest;
 import com.ayeshascode.customer.mock.WireMockConfig;
-import com.ayeshascode.customer.mock.wiremockserver.ClientWireMockServer;
+import com.ayeshascode.customer.mock.mockserver.MockServer;
 import com.ayeshascode.customer.model.Customer;
 import com.ayeshascode.customer.model.CustomerRegistrationRequest;
 import com.ayeshascode.customer.repository.CustomerRepository;
@@ -46,7 +46,7 @@ public class PostV1RegisterCustomerApiTest {
     private WireMockServer mockNotificationService;
 
     @Autowired
-    private ClientWireMockServer clientWireMockServer;
+    private MockServer mockServer;
 
     private final String FRAUD_CHECK_URL = "/v1/fraud-check/.*";
     private final String SEND_NOTIFICATION_URL = "/v1/notifications";
@@ -71,8 +71,8 @@ public class PostV1RegisterCustomerApiTest {
                 @Test
                 @DisplayName("then customer should be registered successfully")
                 void ShouldRegisterCustomer() throws Exception {
-                    clientWireMockServer.setupFraudCheckMock(mockFraudService,false);
-                    clientWireMockServer.setupSendNotificationMock(mockNotificationService);
+                    mockServer.setupFraudCheckMock(mockFraudService,false);
+                    mockServer.setupSendNotificationMock(mockNotificationService);
 
                     var request = new CustomerRegistrationRequest(
                             "Albus",
@@ -97,8 +97,8 @@ public class PostV1RegisterCustomerApiTest {
                     assertThat(customer.getLastName()).isEqualTo("Dumbledore");
                     assertThat(customer.getEmail()).isEqualTo("dumbledore@hogwarts.com");
 
-                    clientWireMockServer.verify(mockFraudService, FRAUD_CHECK_URL);
-                    clientWireMockServer.verify(mockNotificationService, SEND_NOTIFICATION_URL);
+                    mockServer.verify(mockFraudService, FRAUD_CHECK_URL);
+                    mockServer.verify(mockNotificationService, SEND_NOTIFICATION_URL);
                 }
             }
 
@@ -109,7 +109,7 @@ public class PostV1RegisterCustomerApiTest {
                 @Test
                 @DisplayName("then customer shouldnt be registered successfully")
                 void ShouldntBeRegisterCustomer() throws Exception {
-                    clientWireMockServer.setupFraudCheckMock(mockFraudService,true);
+                    mockServer.setupFraudCheckMock(mockFraudService,true);
 
                     var request = new CustomerRegistrationRequest(
                             "Albus",
@@ -127,7 +127,7 @@ public class PostV1RegisterCustomerApiTest {
 
                     assertThat(customerRepository.findAll()).isEmpty();
 
-                    clientWireMockServer.verify(mockFraudService, FRAUD_CHECK_URL);
+                    mockServer.verify(mockFraudService, FRAUD_CHECK_URL);
                 }
             }
         }
