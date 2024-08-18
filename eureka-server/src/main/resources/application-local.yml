@@ -13,4 +13,4 @@ eureka:
 otel:
   exporter:
     otlp:
-      endpoint: http://otel-collector:4318
+      endpoint: http://localhost:4318

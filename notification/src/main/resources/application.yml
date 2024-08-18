@@ -23,3 +23,8 @@ eureka:
       defaultZone: http://eureka-server:8761/eureka
     fetch-registry: true
     register-with-eureka: true
+
+otel:
+  exporter:
+    otlp:
+      endpoint: http://otel-collector:4318
