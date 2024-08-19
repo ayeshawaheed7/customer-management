@@ -1,4 +1,4 @@
-package com.ayeshascode.amqp;
+package com.ayeshascode.amqp.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.AmqpTemplate;
