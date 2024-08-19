@@ -88,6 +88,15 @@ services:
     networks:
       - shared-network
 
+  rabbitMQ:
+    container_name: rabbitMQ
+    image: rabbitmq:3.9.11-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - shared-network
+
 networks:
   shared-network:
     driver: bridge
