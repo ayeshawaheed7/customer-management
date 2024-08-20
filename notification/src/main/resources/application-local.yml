@@ -16,6 +16,8 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+  rabbitmq:
+    addresses: localhost:5672
 
 eureka:
   client:
@@ -32,7 +34,7 @@ otel:
 rabbitmq:
   exchanges:
     internal: internal.exchange
-  queue:
+  queues:
     notification: notification.queue
   routing-keys:
     internal-notification: internal.notification.routing-key

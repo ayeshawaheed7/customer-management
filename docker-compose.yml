@@ -7,6 +7,18 @@ services:
 #    networks:
 #      - shared-network
 
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.9.11-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - shared-network
+
   postgres-customer:
     container_name: postgres-customer
     image: postgres
@@ -85,15 +97,6 @@ services:
       - "4318:4318"
     depends_on:
       - zipkin
-    networks:
-      - shared-network
-
-  rabbitMQ:
-    container_name: rabbitMQ
-    image: rabbitmq:3.9.11-management-alpine
-    ports:
-      - "5672:5672"
-      - "15672:15672"
     networks:
       - shared-network
 
