@@ -23,19 +23,19 @@ public class EurekaServerRunner implements BeforeAllCallback {
         eurekaServer.start();
         System.setProperty("EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE", eurekaServer.getEurekaUrl());
 
-        registerFraudServiceWithEureka(
+        registerServiceWithEureka(
                 eurekaServer.getEurekaUrl(),
                 "fraud",
                 9091
         );
-        registerFraudServiceWithEureka(
+        registerServiceWithEureka(
                 eurekaServer.getEurekaUrl(),
                 "notification",
                 9092
         );
     }
 
-    private void registerFraudServiceWithEureka(String eurekaUrl, String serviceName, int port) {
+    private void registerServiceWithEureka(String eurekaUrl, String serviceName, int port) {
         RestTemplate restTemplate = new RestTemplate();
 
         // Construct the registration request body
