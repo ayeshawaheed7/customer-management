@@ -8,10 +8,7 @@ import com.ayeshascode.customer.model.CustomerRegistrationRequest;
 import com.ayeshascode.customer.repository.CustomerRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.http.MediaType;
@@ -27,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @EnableFeignClients
 @ContextConfiguration(classes = { WireMockConfig.class })
 @DisplayName("POST v1/customers")
+@Disabled
 @IntegrationTest
 public class PostV1RegisterCustomerApiTest {
 

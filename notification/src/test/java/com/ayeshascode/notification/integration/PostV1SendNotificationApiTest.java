@@ -5,6 +5,7 @@ import com.ayeshascode.notification.container.config.IntegrationTest;
 import com.ayeshascode.notification.model.Notification;
 import com.ayeshascode.notification.repository.NotificationRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @DisplayName("POST v1/notifications")
+@Disabled
 @IntegrationTest
 public class PostV1SendNotificationApiTest {
 

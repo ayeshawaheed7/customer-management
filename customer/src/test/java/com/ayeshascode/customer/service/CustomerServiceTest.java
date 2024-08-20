@@ -6,6 +6,7 @@ import com.ayeshascode.clients.notification.NotificationClient;
 import com.ayeshascode.clients.notification.NotificationRequest;
 import com.ayeshascode.customer.model.Customer;
 import com.ayeshascode.customer.model.CustomerRegistrationRequest;
+import com.ayeshascode.customer.producer.RabbitMQMessageProducer;
 import com.ayeshascode.customer.repository.CustomerRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -41,6 +42,9 @@ class CustomerServiceTest {
     @Mock
     private NotificationClient notificationClient;
 
+    @Mock
+    private RabbitMQMessageProducer rabbitMQMessageProducer;
+
     @InjectMocks
     private CustomerService underTest;
 
@@ -75,13 +79,15 @@ class CustomerServiceTest {
             @Test
             @DisplayName("then save customer in DB")
             void saveCustomerInDB() {
+                String exchange = "internal.exchange";
+                String routingKey = "internal.notification.routing-key";
                 FraudCheckResponse expectedResponse = new FraudCheckResponse(false);
 
                 when(idempotencyKeyService.generateKey()).thenReturn(xIdempotencyKey);
                 when(customerRepository.existsByEmail(any())).thenReturn(false);
                 when(customerRepository.saveAndFlush(any())).thenReturn(customer);
                 when(fraudClient.saveAndCheckFraud(any(), any())).thenReturn(ResponseEntity.ok(expectedResponse));
-                doNothing().when(notificationClient).sendNotification(any(), any());
+                doNothing().when(rabbitMQMessageProducer).publish(any(), any(), any());
 
                 underTest.registerCustomer(
                         request.firstName(),
@@ -96,10 +102,14 @@ class CustomerServiceTest {
                                 cu.getLastName().equals(customer.getLastName()) &&
                                 cu.getEmail().equals(customer.getEmail())
                 ));
-                verify(notificationClient).sendNotification(isNotNull(), argThat(nr ->
-                        nr.message().equals(notificationRequest.message()) &&
-                                nr.toCustomerEmail().equals(notificationRequest.toCustomerEmail())
-                ));
+                verify(rabbitMQMessageProducer).publish(
+                        argThat((NotificationRequest nr) ->
+                                nr.toCustomerEmail().equals(notificationRequest.toCustomerEmail()) &&
+                                        nr.message().equals(notificationRequest.message())
+                        ),
+                        eq(exchange),
+                        eq(routingKey)
+                );
             }
 
             @Nested
