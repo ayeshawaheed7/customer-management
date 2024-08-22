@@ -2,13 +2,14 @@ package com.ayeshascode.customer.service;
 
 import com.ayeshascode.clients.fraud.FraudCheckResponse;
 import com.ayeshascode.clients.fraud.FraudClient;
-import com.ayeshascode.clients.notification.NotificationClient;
-import com.ayeshascode.clients.notification.NotificationRequest;
+import com.ayeshascode.clients.notification.NotificationUpdate;
 import com.ayeshascode.customer.model.Customer;
-import com.ayeshascode.customer.producer.RabbitMQMessageProducer;
 import com.ayeshascode.customer.repository.CustomerRepository;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.server.ResponseStatusException;
@@ -17,13 +18,17 @@ import javax.transaction.Transactional;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
+@Slf4j
+@AllArgsConstructor
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final FraudClient fraudClient;
     private final IdempotencyKeyService idempotencyKeyService;
-    private final RabbitMQMessageProducer rabbitMQMessageProducer;
+
+    @Qualifier("notificationUpdateKafkaTemplate")
+    private KafkaTemplate<String, NotificationUpdate> kafkaTemplate;
+
 
     @Transactional
     public void registerCustomer(String firstName, String lastName, String email) {
@@ -46,17 +51,20 @@ public class CustomerService {
 
         customerRepository.saveAndFlush(customer);
 
-        NotificationRequest notificationRequest = new NotificationRequest(
+//        rabbitMQMessageProducer.publish(
+//                notificationRequest,
+//                "internal.exchange",
+//                "internal.notification.routing-key"
+//        );
+
+        NotificationUpdate notificationUpdate = new NotificationUpdate(
                 customer.getId(),
                 customer.getEmail(),
                 "Hi. Welcome to Hogwarts. :)"
         );
 
-        rabbitMQMessageProducer.publish(
-                notificationRequest,
-                "internal.exchange",
-                "internal.notification.routing-key"
-        );
+        kafkaTemplate.send("notification-updates", notificationUpdate);
+        log.info("Dispatching event: \n {} to topic: {}", notificationUpdate, "notification-updates");
     }
 
     private boolean isEmailAlreadyTaken(String email) {

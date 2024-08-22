@@ -2,11 +2,9 @@ package com.ayeshascode.customer.service;
 
 import com.ayeshascode.clients.fraud.FraudCheckResponse;
 import com.ayeshascode.clients.fraud.FraudClient;
-import com.ayeshascode.clients.notification.NotificationClient;
-import com.ayeshascode.clients.notification.NotificationRequest;
+import com.ayeshascode.clients.notification.NotificationUpdate;
 import com.ayeshascode.customer.model.Customer;
 import com.ayeshascode.customer.model.CustomerRegistrationRequest;
-import com.ayeshascode.customer.producer.RabbitMQMessageProducer;
 import com.ayeshascode.customer.repository.CustomerRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -17,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
@@ -40,10 +39,7 @@ class CustomerServiceTest {
     private FraudClient fraudClient;
 
     @Mock
-    private NotificationClient notificationClient;
-
-    @Mock
-    private RabbitMQMessageProducer rabbitMQMessageProducer;
+    private KafkaTemplate<String, NotificationUpdate> kafkaTemplate;
 
     @InjectMocks
     private CustomerService underTest;
@@ -68,26 +64,24 @@ class CustomerServiceTest {
                     customer.getEmail()
             );
 
-            private final NotificationRequest notificationRequest = new NotificationRequest(
+            private final NotificationUpdate notificationUpdate = new NotificationUpdate(
                     customer.getId(),
                     customer.getEmail(),
                     "Hi. Welcome to Hogwarts. :)"
             );
 
             private final String xIdempotencyKey = UUID.randomUUID().toString();
+            private final String topicName = "notification-updates";
 
             @Test
             @DisplayName("then save customer in DB")
             void saveCustomerInDB() {
-                String exchange = "internal.exchange";
-                String routingKey = "internal.notification.routing-key";
                 FraudCheckResponse expectedResponse = new FraudCheckResponse(false);
 
                 when(idempotencyKeyService.generateKey()).thenReturn(xIdempotencyKey);
                 when(customerRepository.existsByEmail(any())).thenReturn(false);
                 when(customerRepository.saveAndFlush(any())).thenReturn(customer);
                 when(fraudClient.saveAndCheckFraud(any(), any())).thenReturn(ResponseEntity.ok(expectedResponse));
-                doNothing().when(rabbitMQMessageProducer).publish(any(), any(), any());
 
                 underTest.registerCustomer(
                         request.firstName(),
@@ -102,13 +96,12 @@ class CustomerServiceTest {
                                 cu.getLastName().equals(customer.getLastName()) &&
                                 cu.getEmail().equals(customer.getEmail())
                 ));
-                verify(rabbitMQMessageProducer).publish(
-                        argThat((NotificationRequest nr) ->
-                                nr.toCustomerEmail().equals(notificationRequest.toCustomerEmail()) &&
-                                        nr.message().equals(notificationRequest.message())
-                        ),
-                        eq(exchange),
-                        eq(routingKey)
+                verify(kafkaTemplate).send(
+                        eq(topicName),
+                        argThat((NotificationUpdate nr) ->
+                                nr.toCustomerEmail().equals(notificationUpdate.toCustomerEmail()) &&
+                                        nr.message().equals(notificationUpdate.message())
+                        )
                 );
             }
 
@@ -159,7 +152,7 @@ class CustomerServiceTest {
                     verify(customerRepository).existsByEmail(request.email());
                     verify(customerRepository, never()).saveAndFlush(any());
                     verify(idempotencyKeyService).generateKey();
-                    verify(notificationClient, never()).sendNotification(customer.getId().toString(), notificationRequest);
+                    verify(kafkaTemplate, never()).send(eq(topicName), any());
                 }
             }
         }

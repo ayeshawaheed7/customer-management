@@ -14,8 +14,8 @@ public class WireMockConfig {
         return new WireMockServer(9091);
     }
 
-    @Bean(initMethod = "start", destroyMethod = "stop")
-    public WireMockServer mockNotificationService() {
-        return new WireMockServer(9092);
-    }
+//    @Bean(initMethod = "start", destroyMethod = "stop")
+//    public WireMockServer mockNotificationService() {
+//        return new WireMockServer(9092);
+//    }
 }

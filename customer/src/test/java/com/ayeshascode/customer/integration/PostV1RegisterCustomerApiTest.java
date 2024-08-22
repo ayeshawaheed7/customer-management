@@ -1,6 +1,9 @@
 package com.ayeshascode.customer.integration;
 
+import com.ayeshascode.clients.notification.NotificationUpdate;
 import com.ayeshascode.customer.container.config.IntegrationTest;
+import com.ayeshascode.customer.utils.KafkaUtils;
+import com.ayeshascode.customer.utils.KafkaUtils.NotificationUpdateDeserializer;
 import com.ayeshascode.customer.mock.WireMockConfig;
 import com.ayeshascode.customer.mock.mockserver.MockServer;
 import com.ayeshascode.customer.model.Customer;
@@ -8,6 +11,7 @@ import com.ayeshascode.customer.model.CustomerRegistrationRequest;
 import com.ayeshascode.customer.repository.CustomerRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.openfeign.EnableFeignClients;
@@ -16,15 +20,16 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.Duration;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("mock-service")
 @EnableFeignClients
-@ContextConfiguration(classes = { WireMockConfig.class })
+@ContextConfiguration(classes = {WireMockConfig.class})
 @DisplayName("POST v1/customers")
-@Disabled
 @IntegrationTest
 public class PostV1RegisterCustomerApiTest {
 
@@ -40,14 +45,18 @@ public class PostV1RegisterCustomerApiTest {
     @Autowired
     private WireMockServer mockFraudService;
 
-    @Autowired
-    private WireMockServer mockNotificationService;
+//    @Autowired
+//    private WireMockServer mockNotificationService;
 
     @Autowired
     private MockServer mockServer;
 
     private final String FRAUD_CHECK_URL = "/v1/fraud-check/.*";
     private final String SEND_NOTIFICATION_URL = "/v1/notifications";
+
+    private final String TOPIC = "notification-updates";
+
+    private KafkaConsumer<String, NotificationUpdate> consumer;
 
     @BeforeEach
     void setUp() {
@@ -69,8 +78,13 @@ public class PostV1RegisterCustomerApiTest {
                 @Test
                 @DisplayName("then customer should be registered successfully")
                 void ShouldRegisterCustomer() throws Exception {
-                    mockServer.setupFraudCheckMock(mockFraudService,false);
-                    mockServer.setupSendNotificationMock(mockNotificationService);
+                    consumer = KafkaUtils.createConsumer(
+                            TOPIC,
+                            NotificationUpdateDeserializer.class
+                    );
+
+                    mockServer.setupFraudCheckMock(mockFraudService, false);
+//                    mockServer.setupSendNotificationMock(mockNotificationService);
 
                     var request = new CustomerRegistrationRequest(
                             "Albus",
@@ -96,7 +110,18 @@ public class PostV1RegisterCustomerApiTest {
                     assertThat(customer.getEmail()).isEqualTo("dumbledore@hogwarts.com");
 
                     mockServer.verify(mockFraudService, FRAUD_CHECK_URL);
-                    mockServer.verify(mockNotificationService, SEND_NOTIFICATION_URL);
+
+                    var records = consumer.poll(Duration.ofSeconds(5));
+                    var record = records.iterator().next();
+
+                    assertThat(record).isNotNull();
+                    NotificationUpdate notificationUpdate = record.value();
+                    assertThat(notificationUpdate).isNotNull();
+                    assertThat(notificationUpdate.toCustomerEmail()).isEqualTo("dumbledore@hogwarts.com");
+                    assertThat(notificationUpdate.message()).isEqualTo("Hi. Welcome to Hogwarts. :)");
+
+//                    mockServer.verify(mockNotificationService, SEND_NOTIFICATION_URL);
+                    consumer.close();
                 }
             }
 
@@ -107,7 +132,7 @@ public class PostV1RegisterCustomerApiTest {
                 @Test
                 @DisplayName("then customer shouldnt be registered successfully")
                 void ShouldntBeRegisterCustomer() throws Exception {
-                    mockServer.setupFraudCheckMock(mockFraudService,true);
+                    mockServer.setupFraudCheckMock(mockFraudService, true);
 
                     var request = new CustomerRegistrationRequest(
                             "Albus",
