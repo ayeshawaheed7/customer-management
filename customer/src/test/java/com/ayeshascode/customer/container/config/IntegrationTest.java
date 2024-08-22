@@ -2,6 +2,7 @@ package com.ayeshascode.customer.container.config;
 
 import com.ayeshascode.customer.CustomerApplication;
 import com.ayeshascode.customer.container.runner.EurekaServerRunner;
+import com.ayeshascode.customer.container.runner.KafkaRunner;
 import com.ayeshascode.customer.container.runner.PostgresRunner;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,6 +16,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @SpringBootTest(classes = CustomerApplication.class)
-@ExtendWith({PostgresRunner.class, EurekaServerRunner.class})
+@ExtendWith({PostgresRunner.class, EurekaServerRunner.class, KafkaRunner.class})
 @AutoConfigureMockMvc
 public @interface IntegrationTest {}
