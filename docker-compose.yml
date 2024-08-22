@@ -1,3 +1,5 @@
+version: '2'
+
 services:
 #  eureka-server:
 #    container_name: eureka-server
@@ -5,19 +7,54 @@ services:
 #    ports:
 #      - "8761:8761"
 #    networks:
-#      - shared-network
+#      - app-tier
 
-  rabbitmq:
-    container_name: rabbitmq
-    image: rabbitmq:3.9.11-management-alpine
+#  rabbitmq:
+#    container_name: rabbitmq
+#    image: rabbitmq:3.9.11-management-alpine
+#    environment:
+#      RABBITMQ_DEFAULT_USER: guest
+#      RABBITMQ_DEFAULT_PASS: guest
+#    ports:
+#      - "5672:5672"
+#      - "15672:15672"
+#    networks:
+#      - app-tier
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - "5672:5672"
-      - "15672:15672"
-    networks:
-      - shared-network
+      - "22181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:master
+    container_name: kafka-ui
+    ports:
+      - "8090:8080"
+    restart: always
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
 
   postgres-customer:
     container_name: postgres-customer
@@ -31,7 +68,7 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - shared-network
+      - app-tier
     restart: unless-stopped
 
   postgres-fraud:
@@ -46,7 +83,7 @@ services:
     ports:
       - "5433:5432"
     networks:
-      - shared-network
+      - app-tier
     restart: unless-stopped
 
   postgres-notification:
@@ -61,7 +98,7 @@ services:
     ports:
       - "5434:5432"
     networks:
-      - shared-network
+      - app-tier
     restart: unless-stopped
 
   pgadmin:
@@ -76,7 +113,7 @@ services:
     ports:
       - "5050:80"
     networks:
-      - shared-network
+      - app-tier
     restart: unless-stopped
 
   zipkin:
@@ -85,7 +122,7 @@ services:
     ports:
       - "9411:9411"
     networks:
-      - shared-network
+      - app-tier
 
   otel-collector:
     container_name: otel-collector
@@ -98,10 +135,10 @@ services:
     depends_on:
       - zipkin
     networks:
-      - shared-network
+      - app-tier
 
 networks:
-  shared-network:
+  app-tier:
     driver: bridge
 
 volumes:
@@ -109,3 +146,5 @@ volumes:
   postgres-fraud-data:
   postgres-notification-data:
   pgadmin:
+  zookeeper-data:
+  kafka-data:
