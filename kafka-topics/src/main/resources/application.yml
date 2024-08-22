@@ -1,0 +1,9 @@
+server:
+  port: 9094
+
+spring:
+  application:
+    name: kafka-topics
+  kafka:
+    bootstrap-servers: kafka:29092
+    security-protocol: PLAINTEXT

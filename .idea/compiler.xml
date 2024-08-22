@@ -12,9 +12,13 @@
         <module name="clients" />
         <module name="fraud" />
         <module name="amqp" />
+        <module name="kafka-topics" />
         <module name="eureka-server" />
         <module name="customer" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="kafka" target="17" />
+    </bytecodeTargetLevel>
   </component>
 </project>
