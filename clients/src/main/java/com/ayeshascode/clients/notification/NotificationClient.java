@@ -13,5 +13,5 @@ public interface NotificationClient {
 
     @PostMapping(path = "v1/notifications")
     void sendNotification(@RequestHeader(value = "X-Idempotency-Key") String xIdempotencyKey,
-                          @Valid @RequestBody NotificationRequest request);
+                          @Valid @RequestBody NotificationUpdate request);
 }
