@@ -16,8 +16,6 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-#  rabbitmq:
-#    addresses: rabbitmq:5672
   kafka:
     bootstrap-servers: kafka:29092
     security-protocol: PLAINTEXT
@@ -29,11 +27,3 @@ otel:
   exporter:
     otlp:
       endpoint: http://otel-collector:4318
-
-#rabbitmq:
-#  exchanges:
-#    internal: internal.exchange
-#  queues:
-#    notification: notification.queue
-#  routing-keys:
-#    internal-notification: internal.notification.routing-key

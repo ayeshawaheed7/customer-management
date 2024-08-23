@@ -51,12 +51,6 @@ public class CustomerService {
 
         customerRepository.saveAndFlush(customer);
 
-//        rabbitMQMessageProducer.publish(
-//                notificationRequest,
-//                "internal.exchange",
-//                "internal.notification.routing-key"
-//        );
-
         NotificationUpdate notificationUpdate = new NotificationUpdate(
                 customer.getId(),
                 customer.getEmail(),

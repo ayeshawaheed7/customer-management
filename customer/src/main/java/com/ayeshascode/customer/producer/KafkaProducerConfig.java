@@ -1,4 +1,4 @@
-package com.ayeshascode.customer.producer.config;
+package com.ayeshascode.customer.producer;
 
 import com.ayeshascode.clients.notification.NotificationUpdate;
 import com.fasterxml.jackson.databind.ObjectMapper;
