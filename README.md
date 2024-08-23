@@ -5,9 +5,9 @@ The Customer Management Service is designed to handle customer-related operation
 One of the key features of the Customer Management service is the Register Customer functionality. The process involves:
 
 - **Fraud Check:** When a customer attempts to register, the Customer Service uses Feign Client to communicate with the Fraud Service, verifying the customer's legitimacy. This step is crucial to detect and prevent fraudulent activities.
-- **Notification:** Once the Fraud Service confirms that the customer is not flagged as fraudulent, the Customer Service sends a notification via the Notification Service to inform the customer of their registration status.
+- **Notification:** Once the Fraud Service confirms that the customer is not flagged as fraudulent, the Customer Service publishes an event to notify the Notification Service. The Notification Service then sends a notification to the customer.
 - **Registration:** Following the successful fraud check and notification, the Customer Service proceeds with the registration process, storing the customer’s data in the database.
-- **Integration:** The integration between Customer Service, Fraud Service, and Notification Service ensures a secure, efficient, and reliable registration process, maintaining the integrity of our customer base and enhancing the user experience.
+- **Integration:** The integration between Customer Service, Fraud Service, and Notification Service is partially event-driven. Notifications are managed via events for a decoupled and reliable process. However, Customer Service and Fraud Service still use Feign Client for synchronous communication. Idempotency keys in event handling ensure data integrity and enhance the user experience, while the event-driven approach improves scalability and reduces dependencies.
 
 ## Detailed Overview
 For a more in-depth understanding of our project, including detailed architecture, best practices, and technical implementation, please visit our GitHub Wiki.
