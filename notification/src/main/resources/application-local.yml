@@ -1,5 +1,5 @@
 server:
-  port: 9092
+  port: 9096
 
 spring:
   application:
@@ -16,8 +16,14 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-  rabbitmq:
-    addresses: localhost:5672
+#  rabbitmq:
+#    addresses: localhost:5672
+  kafka:
+    bootstrap-servers: localhost:29092
+    security-protocol: PLAINTEXT
+    consumer:
+      notification-updates:
+        offset: earliest
 
 eureka:
   client:
@@ -31,10 +37,10 @@ otel:
     otlp:
       endpoint: http://localhost:4318
 
-rabbitmq:
-  exchanges:
-    internal: internal.exchange
-  queues:
-    notification: notification.queue
-  routing-keys:
-    internal-notification: internal.notification.routing-key
+#rabbitmq:
+#  exchanges:
+#    internal: internal.exchange
+#  queues:
+#    notification: notification.queue
+#  routing-keys:
+#    internal-notification: internal.notification.routing-key
