@@ -2,8 +2,8 @@ package com.ayeshascode.customer.integration;
 
 import com.ayeshascode.clients.notification.NotificationUpdate;
 import com.ayeshascode.customer.container.config.IntegrationTest;
+import com.ayeshascode.customer.producer.config.KafkaProducerConfig.NotificationUpdateDeserializer;
 import com.ayeshascode.customer.utils.KafkaUtils;
-import com.ayeshascode.customer.utils.KafkaUtils.NotificationUpdateDeserializer;
 import com.ayeshascode.customer.mock.WireMockConfig;
 import com.ayeshascode.customer.mock.mockserver.MockServer;
 import com.ayeshascode.customer.model.Customer;

@@ -1,13 +1,9 @@
 package com.ayeshascode.customer.utils;
 
-import com.ayeshascode.clients.notification.NotificationUpdate;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Properties;
 
@@ -29,19 +25,4 @@ public class KafkaUtils {
         consumer.subscribe(Collections.singletonList(topic));
         return consumer;
     }
-
-    public static class NotificationUpdateDeserializer implements Deserializer<NotificationUpdate> {
-
-        private final ObjectMapper objectMapper = new ObjectMapper();
-
-        @Override
-        public NotificationUpdate deserialize(String topic, byte[] data) {
-            try {
-                return objectMapper.readValue(data, NotificationUpdate.class);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to deserialize NotificationUpdate", e);
-            }
-        }
-    }
-
 }

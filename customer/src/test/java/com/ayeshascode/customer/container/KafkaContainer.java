@@ -6,7 +6,7 @@ public class KafkaContainer extends org.testcontainers.containers.KafkaContainer
     private static final int KAFKA_PORT = 9093;
 
     public KafkaContainer() {
-        super(DockerImageName.parse("confluentinc/cp-kafka:7.0.1"));
+        super(DockerImageName.parse("confluentinc/cp-kafka:latest"));
         withExposedPorts(KAFKA_PORT);
     }
 

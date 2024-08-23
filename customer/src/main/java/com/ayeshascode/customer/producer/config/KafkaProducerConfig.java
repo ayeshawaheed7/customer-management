@@ -1,9 +1,11 @@
 package com.ayeshascode.customer.producer.config;
 
 import com.ayeshascode.clients.notification.NotificationUpdate;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +15,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
+import java.io.IOException;
 import java.util.Map;
 
 @Configuration
@@ -45,5 +48,19 @@ public class KafkaProducerConfig {
             ProducerFactory<String, NotificationUpdate> producerFactory
     ) {
         return new KafkaTemplate<>(producerFactory);
+    }
+
+    public static class NotificationUpdateDeserializer implements Deserializer<NotificationUpdate> {
+
+        private final ObjectMapper objectMapper = new ObjectMapper();
+
+        @Override
+        public NotificationUpdate deserialize(String topic, byte[] data) {
+            try {
+                return objectMapper.readValue(data, NotificationUpdate.class);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to deserialize NotificationUpdate", e);
+            }
+        }
     }
 }
