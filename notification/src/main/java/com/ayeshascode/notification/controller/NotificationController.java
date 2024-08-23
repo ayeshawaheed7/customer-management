@@ -1,6 +1,6 @@
 package com.ayeshascode.notification.controller;
 
-import com.ayeshascode.clients.notification.NotificationRequest;
+import com.ayeshascode.clients.notification.NotificationUpdate;
 import com.ayeshascode.notification.service.IdempotencyKeyService;
 import com.ayeshascode.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class NotificationController {
 
     @PostMapping
     public void sendNotification(@RequestHeader(value = "X-Idempotency-Key") String xIdempotencyKey,
-                                 @Valid @RequestBody NotificationRequest request) {
+                                 @Valid @RequestBody NotificationUpdate request) {
         log.info("send notification request {}", request);
         if (idempotencyKeyService.hasBeenAlreadyProcessed(xIdempotencyKey)) {
             log.info("Already processed - Discarding send notification request with xIdempotencyKey: {} \n and request: {}", xIdempotencyKey, request);
