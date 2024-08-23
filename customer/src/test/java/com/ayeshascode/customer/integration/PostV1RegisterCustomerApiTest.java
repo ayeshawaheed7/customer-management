@@ -45,14 +45,10 @@ public class PostV1RegisterCustomerApiTest {
     @Autowired
     private WireMockServer mockFraudService;
 
-//    @Autowired
-//    private WireMockServer mockNotificationService;
-
     @Autowired
     private MockServer mockServer;
 
     private final String FRAUD_CHECK_URL = "/v1/fraud-check/.*";
-    private final String SEND_NOTIFICATION_URL = "/v1/notifications";
 
     private final String TOPIC = "notification-updates";
 
@@ -84,7 +80,6 @@ public class PostV1RegisterCustomerApiTest {
                     );
 
                     mockServer.setupFraudCheckMock(mockFraudService, false);
-//                    mockServer.setupSendNotificationMock(mockNotificationService);
 
                     var request = new CustomerRegistrationRequest(
                             "Albus",
@@ -120,7 +115,6 @@ public class PostV1RegisterCustomerApiTest {
                     assertThat(notificationUpdate.toCustomerEmail()).isEqualTo("dumbledore@hogwarts.com");
                     assertThat(notificationUpdate.message()).isEqualTo("Hi. Welcome to Hogwarts. :)");
 
-//                    mockServer.verify(mockNotificationService, SEND_NOTIFICATION_URL);
                     consumer.close();
                 }
             }
