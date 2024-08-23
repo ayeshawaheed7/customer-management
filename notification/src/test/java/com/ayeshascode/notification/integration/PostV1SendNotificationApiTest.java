@@ -1,6 +1,6 @@
 package com.ayeshascode.notification.integration;
 
-import com.ayeshascode.clients.notification.NotificationRequest;
+import com.ayeshascode.clients.notification.NotificationUpdate;
 import com.ayeshascode.notification.container.config.IntegrationTest;
 import com.ayeshascode.notification.model.Notification;
 import com.ayeshascode.notification.repository.NotificationRepository;
@@ -49,7 +49,7 @@ public class PostV1SendNotificationApiTest {
                 String toCustomerEmail = "ross@suits.com";
                 String message = "Hi. Welcome to Pearson Spector Litt. ;)";
 
-                NotificationRequest request = new NotificationRequest(
+                NotificationUpdate request = new NotificationUpdate(
                         toCustomerId,
                         toCustomerEmail,
                         message
