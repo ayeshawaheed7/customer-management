@@ -1,7 +1,8 @@
 package com.ayeshascode.notification.container.config;
 
 import com.ayeshascode.notification.NotificationApplication;
-import com.ayeshascode.notification.container.PostgresRunner;
+import com.ayeshascode.notification.container.runner.KafkaRunner;
+import com.ayeshascode.notification.container.runner.PostgresRunner;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +15,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @SpringBootTest(classes = NotificationApplication.class)
-@ExtendWith({PostgresRunner.class})
+@ExtendWith({PostgresRunner.class, KafkaRunner.class})
 @AutoConfigureMockMvc
 public @interface IntegrationTest {}

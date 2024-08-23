@@ -1,4 +1,4 @@
-package com.ayeshascode.notification.container;
+package com.ayeshascode.notification.container.runner;
 
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
