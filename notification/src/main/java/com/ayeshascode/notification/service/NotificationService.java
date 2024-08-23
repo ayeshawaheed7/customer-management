@@ -17,14 +17,14 @@ public class NotificationService {
 
     @Transactional
     public void send(UUID toCustomerId, String toCustomerEmail, String message) {
-        notificationRepository.save(new Notification(
-                        UUID.randomUUID(),
-                        toCustomerId,
-                        toCustomerEmail,
-                        "Donna",
-                        message,
-                        LocalDateTime.now()
-                )
+        Notification notification = new Notification(
+                UUID.randomUUID(),
+                toCustomerId,
+                toCustomerEmail,
+                "Donna",
+                message,
+                LocalDateTime.now()
         );
+        notificationRepository.save(notification);
     }
 }
