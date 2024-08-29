@@ -3,6 +3,7 @@ package com.ayeshascode.notification.consumer;
 import com.ayeshascode.clients.notification.NotificationUpdate;
 import com.ayeshascode.notification.service.IdempotencyKeyService;
 import com.ayeshascode.notification.service.NotificationService;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -47,6 +48,15 @@ class NotificationUpdateEventHandlerTest {
             );
             private final String xIdempotencyKey = toCustomerId.toString();
 
+            private ConsumerRecord<String, NotificationUpdate> consumerRecord =
+                    new ConsumerRecord<>(
+                            "notification-updates",
+                            1,
+                            1,
+                            toCustomerId.toString(),
+                            notificationUpdate
+                    );
+
             @Nested
             @DisplayName("When event is NOT already processed")
             class EventIsNotAlreadyProcessed {
@@ -62,7 +72,8 @@ class NotificationUpdateEventHandlerTest {
                         doNothing().when(notificationService).send(any(), any(), any());
                         doNothing().when(idempotencyKeyService).save(any());
 
-                        underTest.consumeNotificationUpdate(notificationUpdate);
+
+                        underTest.consumeNotificationUpdate(consumerRecord);
 
                         verify(idempotencyKeyService).hasBeenAlreadyProcessed(xIdempotencyKey);
                         verify(notificationService).send(toCustomerId, toCustomerEmail, message);
@@ -80,7 +91,7 @@ class NotificationUpdateEventHandlerTest {
                 void discardTheRequest() {
                     when(idempotencyKeyService.hasBeenAlreadyProcessed(any())).thenReturn(true);
 
-                    underTest.consumeNotificationUpdate(notificationUpdate);
+                    underTest.consumeNotificationUpdate(consumerRecord);
 
                     verify(idempotencyKeyService).hasBeenAlreadyProcessed(xIdempotencyKey);
                     verify(notificationService, never()).send(toCustomerId, toCustomerEmail, message);

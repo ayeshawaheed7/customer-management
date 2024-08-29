@@ -6,6 +6,7 @@ import com.ayeshascode.clients.notification.NotificationUpdate;
 import com.ayeshascode.customer.model.Customer;
 import com.ayeshascode.customer.model.CustomerRegistrationRequest;
 import com.ayeshascode.customer.repository.CustomerRepository;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -96,13 +97,12 @@ class CustomerServiceTest {
                                 cu.getLastName().equals(customer.getLastName()) &&
                                 cu.getEmail().equals(customer.getEmail())
                 ));
-                verify(kafkaTemplate).send(
-                        eq(topicName),
-                        argThat((NotificationUpdate nr) ->
-                                nr.toCustomerEmail().equals(notificationUpdate.toCustomerEmail()) &&
-                                        nr.message().equals(notificationUpdate.message())
-                        )
-                );
+                verify(kafkaTemplate).send(argThat((ProducerRecord pr) ->
+                        pr.topic().equals("notification-updates") &&
+                                pr.value() instanceof NotificationUpdate &&
+                                ((NotificationUpdate) pr.value()).toCustomerEmail().equals(notificationUpdate.toCustomerEmail()) &&
+                                ((NotificationUpdate) pr.value()).message().equals(notificationUpdate.message())
+                ));
             }
 
             @Nested
