@@ -1,5 +1,5 @@
 server:
-  port: 9096
+  port: 9092
 
 spring:
   application:
@@ -23,7 +23,16 @@ spring:
       notification-updates:
         offset: earliest
 
+management:
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0
+
 otel:
+  service:
+    name: notification-service
   exporter:
     otlp:
       endpoint: http://otel-collector:4318
+      protocol: http/protobuf

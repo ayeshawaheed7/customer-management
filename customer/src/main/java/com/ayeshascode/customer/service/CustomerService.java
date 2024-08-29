@@ -5,8 +5,11 @@ import com.ayeshascode.clients.fraud.FraudClient;
 import com.ayeshascode.clients.notification.NotificationUpdate;
 import com.ayeshascode.customer.model.Customer;
 import com.ayeshascode.customer.repository.CustomerRepository;
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.trace.Tracer;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -28,7 +31,6 @@ public class CustomerService {
 
     @Qualifier("notificationUpdateKafkaTemplate")
     private KafkaTemplate<String, NotificationUpdate> kafkaTemplate;
-
 
     @Transactional
     public void registerCustomer(String firstName, String lastName, String email) {
@@ -57,7 +59,12 @@ public class CustomerService {
                 "Hi. Welcome to Hogwarts. :)"
         );
 
-        kafkaTemplate.send("notification-updates", notificationUpdate);
+        dispatch(notificationUpdate);
+    }
+
+    private void dispatch(NotificationUpdate notificationUpdate) {
+        ProducerRecord<String, NotificationUpdate> producerRecord = new ProducerRecord<>("notification-updates", notificationUpdate.toCustomerId().toString(), notificationUpdate);
+        kafkaTemplate.send(producerRecord);
         log.info("Dispatching event: \n {} to topic: {}", notificationUpdate, "notification-updates");
     }
 

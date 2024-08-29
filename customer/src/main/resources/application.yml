@@ -27,7 +27,15 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
 
+management:
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0
+
 otel:
+  service:
+    name: customer-service
   exporter:
     otlp:
       endpoint: http://otel-collector:4318

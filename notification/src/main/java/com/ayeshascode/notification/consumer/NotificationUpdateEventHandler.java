@@ -5,6 +5,7 @@ import com.ayeshascode.notification.service.IdempotencyKeyService;
 import com.ayeshascode.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +24,8 @@ public class NotificationUpdateEventHandler {
             topics = {"notification-updates"},
             containerFactory = "notificationUpdateKafkaListenerContainerFactory"
     )
-    public void consumeNotificationUpdate(NotificationUpdate notificationUpdate) {
+    public void consumeNotificationUpdate(ConsumerRecord<String, NotificationUpdate> records) {
+        NotificationUpdate notificationUpdate = records.value();
         log.info("Received notification update event: \n {}", notificationUpdate);
 
         UUID xIdempotencyKey = notificationUpdate.toCustomerId();
