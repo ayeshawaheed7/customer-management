@@ -5,8 +5,6 @@ import com.ayeshascode.clients.fraud.FraudClient;
 import com.ayeshascode.clients.notification.NotificationUpdate;
 import com.ayeshascode.customer.model.Customer;
 import com.ayeshascode.customer.repository.CustomerRepository;
-import io.opentelemetry.api.GlobalOpenTelemetry;
-import io.opentelemetry.api.trace.Tracer;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
