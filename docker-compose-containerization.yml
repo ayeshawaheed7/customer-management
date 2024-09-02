@@ -1,25 +1,26 @@
-version: '2'       #local
+version: '2'
 
 services:
-#  eureka-server:
-#    container_name: eureka-server
-#    image: ayeshawaheed7/eureka-server:latest
-#    ports:
-#      - "8761:8761"
-#    networks:
-#      - app-tier
+  eureka-server:
+    container_name: eureka-server
+    image: ayeshawaheed7/eureka-server:latest
+    ports:
+      - "8761:8761"
+    networks:
+      - shared-network
+    depends_on:
+      - otel-collector
 
-#  rabbitmq:
-#    container_name: rabbitmq
-#    image: rabbitmq:3.9.11-management-alpine
-#    environment:
-#      RABBITMQ_DEFAULT_USER: guest
-#      RABBITMQ_DEFAULT_PASS: guest
-#    ports:
-#      - "5672:5672"
-#      - "15672:15672"
-#    networks:
-#      - app-tier
+  apigateway:
+    container_name: apigateway
+    image: ayeshawaheed7/customer-management-apigateway:9965172f946b467a38feaa31d6ce974f976660fd
+    ports:
+      - "9093:9093"
+    networks:
+      - shared-network
+    depends_on:
+      - otel-collector
+      - eureka-server
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -30,7 +31,7 @@ services:
     ports:
       - "22181:2181"
     networks:
-      - app-tier
+      - shared-network
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -47,7 +48,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     networks:
-      - app-tier
+      - shared-network
 
   kafka-ui:
     image: provectuslabs/kafka-ui:master
@@ -60,7 +61,17 @@ services:
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
       - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
     networks:
-      - app-tier
+      - shared-network
+
+  kafka-topics:
+    container_name: kafka-topics
+    image: ayeshawaheed7/customer-management-kafka-topics:270ff11639a61518375ea358cc7a2a976feef941
+    ports:
+      - "9094:9094"
+    networks:
+      - shared-network
+    depends_on:
+      - kafka
 
   postgres-customer:
     container_name: postgres-customer
@@ -74,7 +85,7 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - app-tier
+      - shared-network
     restart: unless-stopped
 
   postgres-fraud:
@@ -89,7 +100,7 @@ services:
     ports:
       - "5433:5432"
     networks:
-      - app-tier
+      - shared-network
     restart: unless-stopped
 
   postgres-notification:
@@ -104,7 +115,7 @@ services:
     ports:
       - "5434:5432"
     networks:
-      - app-tier
+      - shared-network
     restart: unless-stopped
 
   pgadmin:
@@ -119,8 +130,48 @@ services:
     ports:
       - "5050:80"
     networks:
-      - app-tier
+      - shared-network
     restart: unless-stopped
+
+  customer:
+    container_name: customer
+    image: ayeshawaheed7/customer-management-customer-service:3c7833dad3482f43630aec76d3f0c2797024ad92
+    ports:
+      - "9090:9090"
+    networks:
+      - shared-network
+    depends_on:
+      - postgres-customer
+      - otel-collector
+      - eureka-server
+      - apigateway
+      - kafka
+      - kafka-topics
+
+  fraud:
+    container_name: fraud
+    image: ayeshawaheed7/customer-management-fraud-service:3c7833dad3482f43630aec76d3f0c2797024ad92
+    ports:
+      - "9091:9091"
+    networks:
+      - shared-network
+    depends_on:
+      - postgres-fraud
+      - otel-collector
+      - eureka-server
+
+  notification:
+    container_name: notification
+    image: ayeshawaheed7/customer-management-notification-service:3c7833dad3482f43630aec76d3f0c2797024ad92
+    ports:
+      - "9095:9095"
+    networks:
+      - shared-network
+    depends_on:
+      - postgres-notification
+      - otel-collector
+      - kafka
+      - kafka-topics
 
   zipkin:
     image: openzipkin/zipkin
@@ -128,12 +179,12 @@ services:
     ports:
       - "9411:9411"
     networks:
-      - app-tier
+      - shared-network
 
   otel-collector:
     container_name: otel-collector
     image: otel/opentelemetry-collector-contrib:latest
-    command: ["--config=/etc/otel-collector-config.yaml"]
+    command: [ "--config=/etc/otel-collector-config.yaml" ]
     volumes:
       - ./infra/otel-collector-config.yaml:/etc/otel-collector-config.yaml
     ports:
@@ -141,10 +192,10 @@ services:
     depends_on:
       - zipkin
     networks:
-      - app-tier
+      - shared-network
 
 networks:
-  app-tier:
+  shared-network:
     driver: bridge
 
 volumes:
@@ -154,3 +205,5 @@ volumes:
   pgadmin:
   zookeeper-data:
   kafka-data:
+
+
