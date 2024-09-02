@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [customer, fraud, notification, apigateway, kafka-topics]
     timeout-minutes: 30
 
     services:
@@ -82,26 +85,33 @@ jobs:
       - name: Build with Maven
         run: mvn -X --batch-mode --update-snapshots clean verify -f pom.xml
 
-      - name: Packaging customer workflow data as artifacts
+      - name: Packaging ${{ matrix.service }} workflow data as artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: customer-jar
-          path: customer/target/*.jar
+          name: ${{ matrix.service }}-jar
+          path: ${{ matrix.service }}/target/*.jar
           retention-days: 1
 
-      - name: Packaging fraud workflow data as artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: fraud-jar
-          path: fraud/target/*.jar
-          retention-days: 1
-
-      - name: Packaging notification workflow data as artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: notification-jar
-          path: notification/target/*.jar
-          retention-days: 1
+#      - name: Packaging customer workflow data as artifacts
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: customer-jar
+#          path: customer/target/*.jar
+#          retention-days: 1
+#
+#      - name: Packaging fraud workflow data as artifacts
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: fraud-jar
+#          path: fraud/target/*.jar
+#          retention-days: 1
+#
+#      - name: Packaging notification workflow data as artifacts
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: notification-jar
+#          path: notification/target/*.jar
+#          retention-days: 1
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -109,32 +119,42 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Build and push customer Docker image
-        id: push_customer
-        uses: docker/build-push-action@v5
-        with:
-          context: customer
-          file: customer/Dockerfile
-          push: true
-          platforms: linux/arm64
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-customer-service:${{ github.sha }}
+#      - name: Build and push customer Docker image
+#        id: push_customer
+#        uses: docker/build-push-action@v5
+#        with:
+#          context: customer
+#          file: customer/Dockerfile
+#          push: true
+#          platforms: linux/arm64
+#          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-customer-service:${{ github.sha }}
+#
+#      - name: Build and push fraud Docker image
+#        id: push_fraud
+#        uses: docker/build-push-action@v5
+#        with:
+#          context: fraud
+#          file: fraud/Dockerfile
+#          push: true
+#          platforms: linux/arm64
+#          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-fraud-service:${{ github.sha }}
+#
+#      - name: Build and push notification Docker image
+#        id: push_notification
+#        uses: docker/build-push-action@v5
+#        with:
+#          context: notification
+#          file: notification/Dockerfile
+#          push: true
+#          platforms: linux/arm64
+#          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-notification-service:${{ github.sha }}
 
-      - name: Build and push fraud Docker image
-        id: push_fraud
+      - name: Build and push ${{ matrix.service }} Docker image
+        id: push_${{ matrix.service }}
         uses: docker/build-push-action@v5
         with:
-          context: fraud
-          file: fraud/Dockerfile
+          context: ${{ matrix.service }}
+          file: ${{ matrix.service }}/Dockerfile
           push: true
           platforms: linux/arm64
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-fraud-service:${{ github.sha }}
-
-      - name: Build and push notification Docker image
-        id: push_notification
-        uses: docker/build-push-action@v5
-        with:
-          context: notification
-          file: notification/Dockerfile
-          push: true
-          platforms: linux/arm64
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-notification-service:${{ github.sha }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-${{ matrix.service }}-service:${{ github.sha }}
