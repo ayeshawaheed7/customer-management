@@ -9,14 +9,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service: [customer, fraud, notification, apigateway, kafka-topics]
     timeout-minutes: 30
 
     services:
       postgres_customer:
-        if: ${{ matrix.service == 'customer' }}
         image: postgres:13.1
         env:
           POSTGRES_DB: customer
@@ -31,7 +27,6 @@ jobs:
           --health-retries 5
 
       postgres_fraud:
-        if: ${{ matrix.service == 'fraud' }}
         image: postgres:13.1
         env:
           POSTGRES_DB: fraud
@@ -45,8 +40,8 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+
       postgres_notification:
-        if: ${{ matrix.service == 'notification' }}
         image: postgres:13.1
         env:
           POSTGRES_DB: notification
@@ -87,11 +82,46 @@ jobs:
       - name: Build with Maven
         run: mvn -X --batch-mode --update-snapshots clean verify -f pom.xml
 
-      - name: Packaging ${{ matrix.service }} workflow data as artifacts
+      - name: Packaging customer workflow data as artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ matrix.service }}-jar
-          path: ${{ matrix.service }}/target/*.jar
+          name: customer-jar
+          path: customer/target/*.jar
+          retention-days: 1
+
+      - name: Packaging fraud workflow data as artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: fraud-jar
+          path: fraud/target/*.jar
+          retention-days: 1
+
+      - name: Packaging notification workflow data as artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: notification-jar
+          path: notification/target/*.jar
+          retention-days: 1
+
+      - name: Packaging apigateway workflow data as artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: apigateway-jar
+          path: apigateway/target/*.jar
+          retention-days: 1
+
+      - name: Packaging eureka-server workflow data as artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: eureka-server-jar
+          path: eureka-server/target/*.jar
+          retention-days: 1
+
+      - name: Packaging kafka-topics workflow data as artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: kafka-topics-jar
+          path: kafka-topics/target/*.jar
           retention-days: 1
 
       - name: Log in to Docker Hub
@@ -100,12 +130,72 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Build and push ${{ matrix.service }} Docker image
-        id: push_${{ matrix.service }}
+      - name: Build and push customer Docker image
+        id: push_customer
         uses: docker/build-push-action@v5
         with:
-          context: ${{ matrix.service }}
-          file: ${{ matrix.service }}/Dockerfile
+          context: customer
+          file: customer/Dockerfile
           push: true
           platforms: linux/arm64
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-${{ matrix.service }}-service:${{ github.sha }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-customer-service:${{ github.sha }}
+
+      - name: Build and push fraud Docker image
+        id: push_fraud
+        uses: docker/build-push-action@v5
+        with:
+          context: fraud
+          file: fraud/Dockerfile
+          push: true
+          platforms: linux/arm64
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-fraud-service:${{ github.sha }}
+
+      - name: Build and push notification Docker image
+        id: push_notification
+        uses: docker/build-push-action@v5
+        with:
+          context: notification
+          file: notification/Dockerfile
+          push: true
+          platforms: linux/arm64
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-notification-service:${{ github.sha }}
+
+      - name: Build and push apigateway Docker image
+        id: push_notification
+        uses: docker/build-push-action@v5
+        with:
+          context: apigateway
+          file: apigateway/Dockerfile
+          push: true
+          platforms: linux/arm64
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-apigateway:${{ github.sha }}
+
+      - name: Build and push apigateway Docker image
+        id: push_notification
+        uses: docker/build-push-action@v5
+        with:
+          context: apigateway
+          file: apigateway/Dockerfile
+          push: true
+          platforms: linux/arm64
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-apigateway:${{ github.sha }}
+
+      - name: Build and push kafka-topics Docker image
+        id: push_notification
+        uses: docker/build-push-action@v5
+        with:
+          context: kafka-topics
+          file: kafka-topics/Dockerfile
+          push: true
+          platforms: linux/arm64
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-kafka-topics:${{ github.sha }}
+
+      - name: Build and push eureka-server Docker image
+        id: push_notification
+        uses: docker/build-push-action@v5
+        with:
+          context: eureka-server
+          file: eureka-server/Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/eureka-server:${{ github.sha }}
