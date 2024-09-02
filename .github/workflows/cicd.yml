@@ -161,17 +161,7 @@ jobs:
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-notification-service:${{ github.sha }}
 
       - name: Build and push apigateway Docker image
-        id: push_notification
-        uses: docker/build-push-action@v5
-        with:
-          context: apigateway
-          file: apigateway/Dockerfile
-          push: true
-          platforms: linux/arm64
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-apigateway:${{ github.sha }}
-
-      - name: Build and push apigateway Docker image
-        id: push_notification
+        id: push_apigateway
         uses: docker/build-push-action@v5
         with:
           context: apigateway
@@ -181,7 +171,7 @@ jobs:
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-apigateway:${{ github.sha }}
 
       - name: Build and push kafka-topics Docker image
-        id: push_notification
+        id: push_kafka_topics
         uses: docker/build-push-action@v5
         with:
           context: kafka-topics
@@ -191,7 +181,7 @@ jobs:
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-kafka-topics:${{ github.sha }}
 
       - name: Build and push eureka-server Docker image
-        id: push_notification
+        id: push_eureka_server
         uses: docker/build-push-action@v5
         with:
           context: eureka-server
