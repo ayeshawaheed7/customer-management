@@ -103,27 +103,6 @@ jobs:
           path: notification/target/*.jar
           retention-days: 1
 
-      - name: Packaging apigateway workflow data as artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: apigateway-jar
-          path: apigateway/target/*.jar
-          retention-days: 1
-
-      - name: Packaging eureka-server workflow data as artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: eureka-server-jar
-          path: eureka-server/target/*.jar
-          retention-days: 1
-
-      - name: Packaging kafka-topics workflow data as artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: kafka-topics-jar
-          path: kafka-topics/target/*.jar
-          retention-days: 1
-
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -159,33 +138,3 @@ jobs:
           push: true
           platforms: linux/arm64
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-notification-service:${{ github.sha }}
-
-      - name: Build and push apigateway Docker image
-        id: push_apigateway
-        uses: docker/build-push-action@v5
-        with:
-          context: apigateway
-          file: apigateway/Dockerfile
-          push: true
-          platforms: linux/arm64
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-apigateway:${{ github.sha }}
-
-      - name: Build and push kafka-topics Docker image
-        id: push_kafka_topics
-        uses: docker/build-push-action@v5
-        with:
-          context: kafka-topics
-          file: kafka-topics/Dockerfile
-          push: true
-          platforms: linux/arm64
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/customer-management-kafka-topics:${{ github.sha }}
-
-      - name: Build and push eureka-server Docker image
-        id: push_eureka_server
-        uses: docker/build-push-action@v6
-        with:
-          context: eureka-server
-          file: eureka-server/Dockerfile
-          push: true
-          platforms: linux/amd64,linux/arm64
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/eureka-server:${{ github.sha }}
