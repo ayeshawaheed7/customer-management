@@ -4,7 +4,15 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'customer/**'
+      - 'fraud/**'
+      - 'notification/**'
   pull_request:
+    paths:
+      - 'customer/**'
+      - 'fraud/**'
+      - 'notification/**'
 
 jobs:
   build:
