@@ -37,10 +37,6 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.ayeshascode</groupId>
             <artifactId>clients</artifactId>
             <version>1.0-SNAPSHOT</version>
