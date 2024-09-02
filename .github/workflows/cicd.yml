@@ -182,7 +182,7 @@ jobs:
 
       - name: Build and push eureka-server Docker image
         id: push_eureka_server
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: eureka-server
           file: eureka-server/Dockerfile
