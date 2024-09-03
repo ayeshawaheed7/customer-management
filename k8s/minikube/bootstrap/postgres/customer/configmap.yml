@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-customer-config
+data:
+  POSTGRES_DB: customer
+  POSTGRES_USER: ayeshascode
+  POSTGRES_PASSWORD: password

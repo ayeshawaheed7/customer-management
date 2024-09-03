@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-customer
+  labels:
+    app: postgres-customer
+spec:
+  serviceName: postgres-customer
+  replicas: 1
+  template:
+    metadata:
+      name: postgres-customer
+      labels:
+        app: postgres-customer
+    spec:
+      volumes:
+        - name: postgres-customer
+          persistentVolumeClaim:
+            claimName: postgres-customer-pvc
+      containers:
+        - name: postgres-customer
+          image: postgres
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - mountPath: "/var/lib/postgresql/data"
+              name: postgres-customer
+          envFrom:
+            - configMapRef:
+                name: postgres-customer-config
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+  selector:
+    matchLabels:
+      app: postgres-customer
