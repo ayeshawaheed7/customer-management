@@ -6,17 +6,16 @@ metadata:
     app: zookeeper
 spec:
   serviceName: zookeeper
-  replicas: 2
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zookeeper
   template:
     metadata:
       name: zookeeper
       labels:
         app: zookeeper
     spec:
-      volumes:
-        - name: zookeeper
-          persistentVolumeClaim:
-            claimName: zookeeper-pvc
       containers:
         - name: zookeeper
           image: confluentinc/cp-zookeeper:latest
@@ -25,10 +24,15 @@ spec:
           imagePullPolicy: IfNotPresent
           volumeMounts:
             - mountPath: "/var/lib/zookeeper/data"
-              name: zookeeper
+              name: zookeeper-storage
           envFrom:
             - configMapRef:
                 name: zookeeper-config
-  selector:
-    matchLabels:
-      app: zookeeper
+  volumeClaimTemplates:
+    - metadata:
+        name: zookeeper-storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
