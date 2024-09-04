@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zookeeper
+  labels:
+    app: zookeeper
+spec:
+  serviceName: zookeeper
+  replicas: 2
+  template:
+    metadata:
+      name: zookeeper
+      labels:
+        app: zookeeper
+    spec:
+      volumes:
+        - name: zookeeper
+          persistentVolumeClaim:
+            claimName: zookeeper-pvc
+      containers:
+        - name: zookeeper
+          image: confluentinc/cp-zookeeper:latest
+          ports:
+            - containerPort: 2181
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - mountPath: "/var/lib/zookeeper/data"
+              name: zookeeper
+          envFrom:
+            - configMapRef:
+                name: zookeeper-config
+  selector:
+    matchLabels:
+      app: zookeeper
