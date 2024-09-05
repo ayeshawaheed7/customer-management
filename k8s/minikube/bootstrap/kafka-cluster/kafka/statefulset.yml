@@ -2,33 +2,33 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: kafka
-  labels:
-    app: kafka
+  namespace: default
 spec:
-  serviceName: kafka
-  replicas: 2
-  template:
-    metadata:
-      name: kafka
-      labels:
-        app: kafka
-    spec:
-      volumes:
-        - name: kafka
-          persistentVolumeClaim:
-            claimName: kafka-pvc
-      containers:
-        - name: kafka
-          image: confluentinc/cp-kafka:latest
-          ports:
-            - containerPort: 9092
-          imagePullPolicy: IfNotPresent
-          volumeMounts:
-            - mountPath: "/var/lib/kafka/data"
-              name: kafka
-          envFrom:
-            - configMapRef:
-                name: kafka-config
+  replicas: 1
   selector:
     matchLabels:
       app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+        - name: kafka
+          image: bitnami/kafka:latest
+          ports:
+            - containerPort: 9092
+          envFrom:
+            - configMapRef:
+                name: kafka-config
+          volumeMounts:
+            - name: kafka-data
+              mountPath: "/var/lib/zookeeper/data"
+  volumeClaimTemplates:
+    - metadata:
+        name: kafka-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
