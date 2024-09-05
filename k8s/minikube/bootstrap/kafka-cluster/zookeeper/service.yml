@@ -7,7 +7,6 @@ metadata:
 spec:
   ports:
     - port: 2181
-  clusterIP: None
+      targetPort: 2181
   selector:
     app: zookeeper
-

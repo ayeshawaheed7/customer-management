@@ -18,21 +18,20 @@ spec:
     spec:
       containers:
         - name: zookeeper
-          image: confluentinc/cp-zookeeper:latest
+          image: bitnami/zookeeper:latest
           ports:
             - containerPort: 2181
-          imagePullPolicy: IfNotPresent
+          env:
+            - name: ALLOW_ANONYMOUS_LOGIN
+              value: "yes"
           volumeMounts:
             - mountPath: "/var/lib/zookeeper/data"
-              name: zookeeper-storage
-          envFrom:
-            - configMapRef:
-                name: zookeeper-config
+              name: zookeeper-data
   volumeClaimTemplates:
     - metadata:
-        name: zookeeper-storage
+        name: zookeeper-data
       spec:
-        accessModes: ["ReadWriteOnce"]
+        accessModes: [ "ReadWriteOnce" ]
         resources:
           requests:
             storage: 10Gi
