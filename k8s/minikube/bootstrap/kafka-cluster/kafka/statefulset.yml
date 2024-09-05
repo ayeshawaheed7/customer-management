@@ -23,7 +23,7 @@ spec:
                 name: kafka-config
           volumeMounts:
             - name: kafka-data
-              mountPath: "/var/lib/zookeeper/data"
+              mountPath: "/var/lib/kafka/data"
   volumeClaimTemplates:
     - metadata:
         name: kafka-data
