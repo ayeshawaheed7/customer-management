@@ -3,7 +3,7 @@ version: '2'
 services:
   eureka-server:
     container_name: eureka-server
-    image: ayeshawaheed7/eureka-server:latest
+    image: ayeshawaheed7/eureka-server:9d757da7055196ce49856d0d8571a510a70d3882
     ports:
       - "8761:8761"
     environment:
@@ -15,7 +15,7 @@ services:
 
   apigateway:
     container_name: apigateway
-    image: ayeshawaheed7/customer-management-apigateway:9965172f946b467a38feaa31d6ce974f976660fd
+    image: ayeshawaheed7/customer-management-apigateway:9d757da7055196ce49856d0d8571a510a70d3882
     ports:
       - "9093:9093"
     networks:
@@ -69,7 +69,7 @@ services:
 
   kafka-topics:
     container_name: kafka-topics
-    image: ayeshawaheed7/customer-management-kafka-topics:270ff11639a61518375ea358cc7a2a976feef941
+    image: ayeshawaheed7/customer-management-kafka-topics:9d757da7055196ce49856d0d8571a510a70d3882
     ports:
       - "9094:9094"
     environment:
@@ -141,7 +141,7 @@ services:
 
   customer:
     container_name: customer
-    image: ayeshawaheed7/customer-management-customer-service:b197e5d570155dbcbbde1e5b8c97aca218c0543c
+    image: ayeshawaheed7/customer-management-customer-service:9d757da7055196ce49856d0d8571a510a70d3882
     ports:
       - "9090:9090"
     environment:
@@ -158,7 +158,7 @@ services:
 
   fraud:
     container_name: fraud
-    image: ayeshawaheed7/customer-management-fraud-service:b197e5d570155dbcbbde1e5b8c97aca218c0543c
+    image: ayeshawaheed7/customer-management-fraud-service:9d757da7055196ce49856d0d8571a510a70d3882
     ports:
       - "9091:9091"
     networks:
@@ -172,7 +172,7 @@ services:
 
   notification:
     container_name: notification
-    image: ayeshawaheed7/customer-management-notification-service:b197e5d570155dbcbbde1e5b8c97aca218c0543c
+    image: ayeshawaheed7/customer-management-notification-service:9d757da7055196ce49856d0d8571a510a70d3882
     ports:
       - "9095:9095"
     networks:
