@@ -6,6 +6,8 @@ services:
     image: ayeshawaheed7/eureka-server:latest
     ports:
       - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
     networks:
       - shared-network
     depends_on:
@@ -18,6 +20,8 @@ services:
       - "9093:9093"
     networks:
       - shared-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       - otel-collector
       - eureka-server
@@ -68,6 +72,8 @@ services:
     image: ayeshawaheed7/customer-management-kafka-topics:270ff11639a61518375ea358cc7a2a976feef941
     ports:
       - "9094:9094"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
     networks:
       - shared-network
     depends_on:
@@ -135,9 +141,11 @@ services:
 
   customer:
     container_name: customer
-    image: ayeshawaheed7/customer-management-customer-service:3c7833dad3482f43630aec76d3f0c2797024ad92
+    image: ayeshawaheed7/customer-management-customer-service:b197e5d570155dbcbbde1e5b8c97aca218c0543c
     ports:
       - "9090:9090"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
     networks:
       - shared-network
     depends_on:
@@ -150,11 +158,13 @@ services:
 
   fraud:
     container_name: fraud
-    image: ayeshawaheed7/customer-management-fraud-service:3c7833dad3482f43630aec76d3f0c2797024ad92
+    image: ayeshawaheed7/customer-management-fraud-service:b197e5d570155dbcbbde1e5b8c97aca218c0543c
     ports:
       - "9091:9091"
     networks:
       - shared-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       - postgres-fraud
       - otel-collector
@@ -162,11 +172,13 @@ services:
 
   notification:
     container_name: notification
-    image: ayeshawaheed7/customer-management-notification-service:3c7833dad3482f43630aec76d3f0c2797024ad92
+    image: ayeshawaheed7/customer-management-notification-service:b197e5d570155dbcbbde1e5b8c97aca218c0543c
     ports:
       - "9095:9095"
     networks:
       - shared-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       - postgres-notification
       - otel-collector
