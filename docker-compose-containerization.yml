@@ -83,6 +83,7 @@ services:
     container_name: postgres-customer
     image: postgres
     environment:
+      POSTGRES_DB: customer
       POSTGRES_USER: ayeshascode
       POSTGRES_PASSWORD: password
       PGDATA: /var/lib/postgresql/data
@@ -98,6 +99,7 @@ services:
     container_name: postgres-fraud
     image: postgres
     environment:
+      POSTGRES_DB: fraud
       POSTGRES_USER: ayeshascode
       POSTGRES_PASSWORD: password
       PGDATA: /var/lib/postgresql/data
@@ -113,6 +115,7 @@ services:
     container_name: postgres-notification
     image: postgres
     environment:
+      POSTGRES_DB: notification
       POSTGRES_USER: ayeshascode
       POSTGRES_PASSWORD: password
       PGDATA: /var/lib/postgresql/data
