@@ -27,6 +27,7 @@ This will:
 ### Access the Application:
 - API Gateway: http://localhost:9093
 - Customer Service: http://localhost:9090
+- Register Customer: http://localhost:9090/v1/customers
 
 Check container status with:
 ```
@@ -37,6 +38,34 @@ docker ps
 ```
 docker-compose -f docker-compose-containerization.yml down
 ```
+## Running the Application with Kubernetes
+### Prerequisites:
+- Install Minikube and kubectl.
+## Start and Deploy:
+1. Run the following command to start Minikube and deploy the entire environment:
+```
+./deploy.sh
+```
+This will:
+
+- Start Minikube with 4GB of memory.
+- Deploy PostgreSQL, Kafka, and observability services (Otel and Zipkin).
+- Deploy the microservices for Customer, Fraud, and Notification.
+
+2. Expose Services Using Minikube Tunnel: Some services use `LoadBalancer`  type, which requires running `minikube tunnel`  to make them accessible:
+
+Open a new terminal window and run:
+```
+minikube tunnel
+```
+This command will expose services with LoadBalancer type and make them accessible via external IP addresses.
+
+## Accessing the Services:
+- Customer Service:
+   - Base URL: http://localhost:9090
+   - Register Customer: http://localhost:9090/v1/customers
+You can now access services once the deployment completes and the Minikube tunnel is running.
+
 ## Detailed Overview
 For a more in-depth understanding of our project, including detailed architecture, best practices, and technical implementation, please visit our GitHub Wiki.
 
