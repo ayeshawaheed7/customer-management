@@ -2,19 +2,21 @@ package com.ayeshascode.customer.integration;
 
 import com.ayeshascode.clients.notification.NotificationUpdate;
 import com.ayeshascode.customer.container.config.IntegrationTest;
-import com.ayeshascode.customer.producer.KafkaProducerConfig.NotificationUpdateDeserializer;
-import com.ayeshascode.customer.utils.KafkaUtils;
 import com.ayeshascode.customer.mock.WireMockConfig;
 import com.ayeshascode.customer.mock.mockserver.MockServer;
 import com.ayeshascode.customer.model.Customer;
 import com.ayeshascode.customer.model.CustomerRegistrationRequest;
+import com.ayeshascode.customer.producer.KafkaProducerConfig.NotificationUpdateDeserializer;
 import com.ayeshascode.customer.repository.CustomerRepository;
+import com.ayeshascode.customer.utils.KafkaUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -27,7 +29,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("mock-service")
-@EnableFeignClients
 @ContextConfiguration(classes = {WireMockConfig.class})
 @DisplayName("POST v1/customers")
 @IntegrationTest

@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: customer
+  profiles:
+    active: local
   datasource:
     url: ${POSTGRESQL_DB_URL}
     username: ${POSTGRESQL_DB_USERNAME}
