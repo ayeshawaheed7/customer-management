@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fraud
+  labels:
+    app: fraud
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: fraud
+      labels:
+        app: fraud
+    spec:
+      containers:
+        - name: fraud
+          image: ayeshawaheed7/customer-management-fraud-service:0f4f7cab6795b4cf3e135b3cf14ce5b11d60550d
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9091
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: kube
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: fraud
