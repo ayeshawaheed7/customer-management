@@ -9,7 +9,11 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.UUID;
 
-@FeignClient(name = "fraud", configuration = FeignConfig.class)
+@FeignClient(
+        name = "fraud",
+        configuration = FeignConfig.class,
+        url = "${clients.fraud.url}"
+)
 public interface FraudClient {
     @PostMapping(path = "v1/fraud-check/{customerId}")
     ResponseEntity<FraudCheckResponse> saveAndCheckFraud(@RequestHeader(value = "X-Idempotency-Key") String xIdempotencyKey,
