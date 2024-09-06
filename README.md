@@ -27,7 +27,7 @@ This will:
 ### Access the Application:
 - API Gateway: http://localhost:9093 - Use for routing requests.
 - Customer Service: http://localhost:9090 - Direct access to customer-related services.
-   - Register Customer: http://localhost:9090/v1/customers - Endpoint to register new customers.
+- Register Customer: http://localhost:9090/v1/customers - Endpoint to register new customers.
 
 You can choose to use the API Gateway or access the Customer Service directly.
 
@@ -62,7 +62,7 @@ minikube tunnel
 ```
 This command will expose services with LoadBalancer type and make them accessible via external IP addresses.
 
-## Accessing the Services:
+### Accessing the Services:
 - Customer Service:
   - Base URL: http://localhost:9090
   - Register Customer: http://localhost:9090/v1/customers
