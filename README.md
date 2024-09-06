@@ -25,9 +25,11 @@ This will:
 - Run everything in detached mode (-d).
 
 ### Access the Application:
-- API Gateway: http://localhost:9093
-- Customer Service: http://localhost:9090
-- Register Customer: http://localhost:9090/v1/customers
+- API Gateway: http://localhost:9093 - Use for routing requests.
+- Customer Service: http://localhost:9090 - Direct access to customer-related services.
+   - Register Customer: http://localhost:9090/v1/customers - Endpoint to register new customers.
+
+You can choose to use the API Gateway or access the Customer Service directly.
 
 Check container status with:
 ```
@@ -62,8 +64,9 @@ This command will expose services with LoadBalancer type and make them accessibl
 
 ## Accessing the Services:
 - Customer Service:
-   - Base URL: http://localhost:9090
-   - Register Customer: http://localhost:9090/v1/customers
+  - Base URL: http://localhost:9090
+  - Register Customer: http://localhost:9090/v1/customers
+
 You can now access services once the deployment completes and the Minikube tunnel is running.
 
 ## Detailed Overview
