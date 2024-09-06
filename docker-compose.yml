@@ -1,13 +1,13 @@
 version: '2'       #local
 
 services:
-  eureka-server:
-    container_name: eureka-server
-    image: ayeshawaheed7/eureka-server:9965172f946b467a38feaa31d6ce974f976660fd
-    ports:
-      - "8761:8761"
-    networks:
-      - app-tier
+#  eureka-server:
+#    container_name: eureka-server
+#    image: ayeshawaheed7/eureka-server:9965172f946b467a38feaa31d6ce974f976660fd
+#    ports:
+#      - "8761:8761"
+#    networks:
+#      - app-tier
 
 #  rabbitmq:
 #    container_name: rabbitmq
@@ -38,7 +38,7 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - "29092:9092"
+      - "29092:29092"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
