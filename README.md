@@ -43,7 +43,7 @@ docker-compose -f docker-compose-containerization.yml down
 ## Running the Application with Kubernetes
 ### Prerequisites:
 - Install Minikube and kubectl.
-## Start and Deploy:
+### Start and Deploy:
 1. Run the following command to start Minikube and deploy the entire environment:
 ```
 ./deploy.sh
