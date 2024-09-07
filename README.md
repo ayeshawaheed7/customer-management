@@ -62,10 +62,9 @@ minikube tunnel
 ```
 This command will expose services with LoadBalancer type and make them accessible via external IP addresses.
 
-### Accessing the Services:
-- Customer Service:
-  - Base URL: http://localhost:9090
-  - Register Customer: http://localhost:9090/v1/customers
+### Accessing the Application:
+- Customer Service: http://localhost:9090
+- Register Customer: http://localhost:9090/v1/customers
 
 You can now access services once the deployment completes and the Minikube tunnel is running.
 
